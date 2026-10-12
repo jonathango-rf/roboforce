@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Attendance</title>
+<style>
+:root{
+  --bg:#f5f6f8; --surface:#fff; --surface-2:#f1f3f6; --border:#dfe3e8; --border-strong:#c9cfd8;
+  --text:#14171c; --muted:#5f6b7a; --focus:#2563eb;
+  --ink:#1b1f26; --on-ink:#fff;
+  --go:#15803d; --on-go:#fff;
+  --green:#15803d; --green-bg:#dcfce7;
+  --amber:#a16207; --amber-bg:#fef3c7;
+  --orange:#c2410c; --orange-bg:#ffedd5;
+  --violet:#6d28d9; --violet-bg:#ede9fe;
+  --slate:#475569; --slate-bg:#e2e8f0;
+  --teal:#0f766e; --teal-bg:#ccfbf1;
+  --red:#b91c1c; --red-bg:#fee2e2;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0e1013; --surface:#16191e; --surface-2:#1d2128; --border:#2a2f37; --border-strong:#3a414c;
+    --text:#e7e9ed; --muted:#98a2b3; --focus:#60a5fa;
+    --ink:#e7e9ed; --on-ink:#0e1013;
+    --go:#22c55e; --on-go:#052e14;
+    --green:#4ade80; --green-bg:rgba(74,222,128,.14);
+    --amber:#fbbf24; --amber-bg:rgba(251,191,36,.14);
+    --orange:#fb923c; --orange-bg:rgba(251,146,60,.15);
+    --violet:#c4b5fd; --violet-bg:rgba(167,139,250,.17);
+    --slate:#cbd5e1; --slate-bg:rgba(148,163,184,.17);
+    --teal:#5eead4; --teal-bg:rgba(45,212,191,.14);
+    --red:#f87171; --red-bg:rgba(248,113,113,.16);
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 var(--sans)}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.mono,input[type=time],input[type=number],input[type=date]{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px 96px}
+
+/* header */
+header.top{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--border)}
+.top-in{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:15px;margin-right:4px}
+.tabs{display:flex;gap:4px}
+.tab{border:0;background:none;padding:7px 12px;border-radius:8px;color:var(--muted);font-weight:600}
+.tab[aria-selected=true]{background:var(--surface);color:var(--text);box-shadow:inset 0 0 0 1px var(--border)}
+.top-spacer{flex:1}
+
+/* buttons */
+.btn{border:1px solid var(--border-strong);background:var(--surface);border-radius:8px;padding:6px 12px;min-height:34px;white-space:nowrap}
+.btn:hover{background:var(--surface-2)}
+.btn.sm{padding:4px 10px;min-height:30px;font-size:13px}
+.btn.danger{border-color:var(--red);color:var(--red)}
+.btn.danger-solid{background:var(--red);border-color:var(--red);color:#fff}
+.btn.ink{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.btn.link{border:0;background:none;padding:0;min-height:0;color:var(--focus);text-decoration:underline;text-underline-offset:2px}
+.btn-big{width:100%;min-height:46px;border-radius:10px;border:0;font-weight:700;font-size:15px}
+.btn-big.go{background:var(--go);color:var(--on-go)}
+.btn-big.stop{background:var(--ink);color:var(--on-ink)}
+.btn-big:active,.btn:active{transform:translateY(1px)}
+.icon-btn{width:38px;height:38px;border-radius:8px;border:1px solid var(--border-strong);background:var(--surface);font-size:20px;line-height:1;display:inline-grid;place-items:center}
+.chip{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:3px 10px;font-size:12px}
+.chip.warn{border-color:var(--amber);color:var(--amber);background:var(--amber-bg)}
+
+/* segmented */
+.seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:9px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;padding:6px 12px;min-height:34px;border-right:1px solid var(--border)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--on-ink);font-weight:600}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.5}
+.p-present{background:var(--green-bg);color:var(--green)}
+.p-done{color:var(--green);box-shadow:inset 0 0 0 1px var(--green-bg)}
+.p-late{background:var(--amber-bg);color:var(--amber)}
+.p-early{background:var(--orange-bg);color:var(--orange)}
+.p-sick{background:var(--violet-bg);color:var(--violet)}
+.p-ooo{background:var(--slate-bg);color:var(--slate)}
+.p-half{background:var(--teal-bg);color:var(--teal)}
+.p-flag{background:var(--red-bg);color:var(--red)}
+.p-flag-o{color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+.p-note{background:var(--surface-2);color:var(--muted);font-weight:500;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.p-arch{background:var(--surface-2);color:var(--muted)}
+
+/* daily log */
+.datebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0 10px}
+.date-title{min-width:0;padding:0 4px}
+.date-title h1{margin:0;font-size:20px;line-height:1.2}
+.date-title .sub{font-size:12px;color:var(--muted)}
+.date-title .sub b{color:var(--green)}
+.datebar input[type=date]{border:1px solid var(--border-strong);background:var(--surface);border-radius:8px;padding:6px 8px;min-height:38px}
+.counters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.counter{display:flex;align-items:baseline;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:6px 10px}
+.counter b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:16px}
+.counter span{font-size:12px;color:var(--muted)}
+.counter.c-on b{color:var(--green)} .counter.c-sick b{color:var(--violet)} .counter.c-ooo b{color:var(--slate)} .counter.c-none b{color:var(--red)}
+.toolbar{display:flex;gap:8px;margin-bottom:8px}
+.search{flex:1;max-width:360px;border:1px solid var(--border-strong);background:var(--surface);border-radius:8px;padding:7px 10px;min-height:38px}
+.list{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.row{border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:0}
+.row-main{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(130px,1.6fr) 132px 132px 60px 36px;grid-template-areas:"who pills in out hrs chev";align-items:center;gap:10px;padding:8px 10px 8px 14px;min-height:64px}
+.who{grid-area:who;border:0;background:none;padding:0;text-align:left;min-width:0}
+.who .name{display:block;font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who .sched{display:block;font-size:12px;color:var(--muted)}
+.pills{grid-area:pills;display:flex;flex-wrap:wrap;gap:4px;min-width:0}
+.cell-in{grid-area:in}.cell-out{grid-area:out}
+.cell-in,.cell-out{min-width:0}
+.tval{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px}
+.tlabel{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.hrs{grid-area:hrs;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px}
+.chev{grid-area:chev;width:34px;height:34px;border:0;border-radius:8px;background:none;color:var(--muted);font-size:16px}
+.chev:hover{background:var(--surface-2)}
+.row.open .chev{transform:rotate(180deg)}
+.quick{display:flex;gap:6px}
+.quick .btn{flex:1}
+.detail{background:var(--surface-2);border-top:1px dashed var(--border);padding:12px 14px 14px}
+.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+.field input{width:100%;border:1px solid var(--border-strong);background:var(--surface);border-radius:8px;padding:6px 8px;min-height:38px}
+.inline{display:flex;gap:6px}
+.inline input{flex:1;min-width:0}
+.field.wide{margin-top:10px}
+.hint-line{font-size:12px;color:var(--muted);margin-top:10px}
+.detail-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.calc{font-size:12px;color:var(--muted)}
+.confirm{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+
+/* empty / bulk */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.bulk textarea{width:100%;min-height:130px;resize:vertical;border:1px solid var(--border-strong);background:var(--surface);border-radius:8px;padding:8px 10px;font-family:var(--sans)}
+.bulk .actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
+
+/* hours */
+.hbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0 12px}
+.period{font-weight:700;font-size:16px;padding:0 4px}
+.grow{flex:1}
+.table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+table{border-collapse:collapse;width:100%}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:600;background:var(--surface)}
+.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+th.num{font-family:var(--sans)}
+.sum td:first-child,.sum th:first-child{position:sticky;left:0;background:var(--surface);z-index:1}
+.prow{cursor:pointer}
+.prow:hover td{background:var(--surface-2)}
+.pbtn{border:0;background:none;padding:0;font-weight:600;display:inline-flex;gap:6px;align-items:center}
+.pbtn .car{color:var(--muted);display:inline-block;width:12px}
+.drow>td{padding:0 0 0 12px;background:var(--surface-2)}
+.drow>td:first-child{position:static}
+.dtable td,.dtable th{font-size:13px;padding:6px 12px;background:transparent}
+.dtable tr:last-child td{border-bottom:0}
+.dtable td.note{white-space:normal;min-width:160px;max-width:360px;color:var(--muted)}
+tfoot td{font-weight:700;border-bottom:0;background:var(--surface-2)}
+.sum tfoot td:first-child{background:var(--surface-2)}
+.flags{display:flex;gap:4px}
+
+/* team */
+.section{margin-top:24px}
+.section h2{font-size:15px;margin:0 0 8px;display:flex;gap:8px;align-items:baseline}
+.section h2 span{font-weight:400;font-size:12px;color:var(--muted)}
+.people{background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.trow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--border)}
+.trow:last-child{border-bottom:0}
+.trow .name-in{flex:1 1 180px;min-width:140px;font-weight:600}
+.trow input{border:1px solid var(--border-strong);background:var(--surface);border-radius:8px;padding:5px 8px;min-height:34px}
+.trow .sch{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.trow .sch input{width:118px}
+.rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.rule input{width:100%;border:1px solid var(--border-strong);background:var(--surface);border-radius:8px;padding:6px 8px;min-height:38px}
+.rule .lbl{font-weight:600;font-size:13px;margin-bottom:4px;display:block}
+.rule .hint{font-size:12px;color:var(--muted);margin-top:4px}
+.backup p{margin:0 0 10px}
+.notice{border-radius:10px;padding:10px 12px;margin-top:12px;font-size:13px}
+.notice.warn{background:var(--amber-bg);color:var(--amber)}
+.notice.err{background:var(--red-bg);color:var(--red)}
+.notice.info{background:var(--surface-2);border:1px solid var(--border)}
+.notice ul{margin:6px 0 0;padding-left:18px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.manual textarea{width:100%;height:160px;font-family:var(--mono);font-size:12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);padding:8px}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:14px;background:var(--ink);color:var(--on-ink);padding:10px 12px 10px 16px;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.25);max-width:calc(100vw - 32px)}
+#toast[hidden]{display:none}
+#toast button{border:0;background:transparent;color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:4px 6px}
+
+@media (max-width:760px){
+  .row-main{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 36px;grid-template-areas:"who hrs chev" "pills pills pills" "in out out";gap:8px 10px;padding:10px 10px 12px 12px}
+  .pills:empty{display:none}
+  .fields{grid-template-columns:1fr 1fr}
+  .fields .field:last-child{grid-column:1/-1}
+  .date-title h1{font-size:17px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <span class="brand">Attendance</span>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-act="tab" data-tab="log" id="tab-log">Daily log</button>
+      <button class="tab" role="tab" data-act="tab" data-tab="hours" id="tab-hours">Hours</button>
+      <button class="tab" role="tab" data-act="tab" data-tab="team" id="tab-team">Team</button>
+    </nav>
+    <span class="top-spacer"></span>
+    <span id="backup-chip"></span>
+  </div>
+</header>
+<main class="wrap" id="view"></main>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<input type="file" id="import-file" accept=".json,application/json" hidden>
+
+<script>
+/* PURE:BEGIN — no DOM, no storage; tested in Node */
+const STATUSES = ['present', 'half', 'sick', 'ooo'];
+const STATUS_LABEL = { present: 'Present', half: 'Half-day', sick: 'Sick', ooo: 'OOO' };
+const DEFAULT_SETTINGS = { defaultStart: '07:00', defaultEnd: '15:30', graceMin: 5, breakMin: 30, clock: '12', payPeriodAnchor: '2026-10-12' };
+const EXPORT_COLUMNS = ['Date', 'Weekday', 'Person', 'Status', 'Clock in', 'Clock out', 'Break (min)', 'Hours', 'Late', 'Late (min)', 'Left early', 'Left early (min)', 'Flag', 'Note'];
+const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const LONG_SHIFT_MIN = 300; // default break applies to shifts longer than 5 h
+
+function pad(n) { return String(n).padStart(2, '0'); }
+function toMin(t) { return t && TIME_RE.test(t) ? Number(t.slice(0, 2)) * 60 + Number(t.slice(3)) : null; }
+// Dates are local calendar days. Noon avoids DST edge cases when stepping days.
+function parseDate(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d, 12); }
+function dateStr(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function timeStr(d) { return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function addDays(s, n) { const d = parseDate(s); d.setDate(d.getDate() + n); return dateStr(d); }
+function diffDays(a, b) { return Math.round((parseDate(b) - parseDate(a)) / 864e5); }
+function weekdayIdx(s) { return parseDate(s).getDay(); }
+function isWeekday(s) { const w = weekdayIdx(s); return w >= 1 && w <= 5; }
+function isValidDate(s) { return typeof s === 'string' && DATE_RE.test(s) && dateStr(parseDate(s)) === s; }
+function fmtHours(min) { return (min / 60).toFixed(2); }
+function fmtDur(min) { return min < 60 ? min + 'm' : Math.floor(min / 60) + 'h ' + pad(min % 60) + 'm'; }
+function fmtTime(t, clock) {
+  if (!t) return '';
+  if (clock === '24') return t;
+  const h = Number(t.slice(0, 2));
+  return (h % 12 || 12) + ':' + t.slice(3) + (h < 12 ? ' AM' : ' PM');
+}
+function schedFor(person, s) { return { start: (person && person.start) || s.defaultStart, end: (person && person.end) || s.defaultEnd }; }
+function sortPeople(list) { return list.slice().sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }) || a.id.localeCompare(b.id)); }
+function getEntry(state, date, pid) { const d = state.days[date]; return (d && d.entries && d.entries[pid]) || null; }
+function isTimed(entry) { return !entry || entry.status === 'present' || entry.status === 'half'; }
+
+function calc(entry, person, settings, date, today) {
+  const r = { status: entry ? entry.status : null, inMin: null, outMin: null, breakMin: 0, breakAuto: true, workedMin: 0,
+    late: false, lateMin: 0, early: false, earlyMin: 0, noClockOut: false, badTimes: false, onSite: false, done: false, toFix: false };
+  if (!entry || !isTimed(entry)) return r; // sick / OOO: times ignored, 0 hours
+  const i = toMin(entry.in), o = toMin(entry.out);
+  r.inMin = i; r.outMin = o;
+  if (o != null && (i == null || o <= i)) r.badTimes = true;
+  if (i != null && o != null && o > i) {
+    const span = o - i;
+    r.breakAuto = entry.breakMin == null;
+    r.breakMin = r.breakAuto ? (span > LONG_SHIFT_MIN ? settings.breakMin : 0) : entry.breakMin;
+    r.workedMin = Math.max(0, span - r.breakMin);
+    r.done = true;
+  }
+  if (i != null && o == null) { if (date < today) r.noClockOut = true; else r.onSite = true; }
+  if (entry.status === 'present') {
+    const sch = schedFor(person, settings);
+    if (i != null) { const d = i - toMin(sch.start); if (d > settings.graceMin) { r.late = true; r.lateMin = d; } }
+    if (r.done) { const d = toMin(sch.end) - o; if (d > settings.graceMin) { r.early = true; r.earlyMin = d; } }
+  }
+  r.toFix = r.noClockOut || r.badTimes;
+  return r;
+}
+
+// mode: 'week' (Mon–Sun) or '2w' (14 days aligned to anchor). ref: any date inside the period.
+function periodRange(mode, ref, anchor) {
+  let start, len;
+  if (mode === '2w') { len = 14; start = addDays(anchor, Math.floor(diffDays(anchor, ref) / 14) * 14); }
+  else { len = 7; start = addDays(ref, -((weekdayIdx(ref) + 6) % 7)); }
+  const days = [];
+  for (let i = 0; i < len; i++) days.push(addDays(start, i));
+  return { start, end: days[len - 1], days };
+}
+
+function flagText(c) { return [c.noClockOut && 'No clock-out', c.badTimes && 'Check times'].filter(Boolean).join('; '); }
+
+function summarize(state, range, today) {
+  const inRange = p => range.days.some(d => getEntry(state, d, p.id));
+  return sortPeople(state.people.filter(p => !p.archived || inRange(p))).map(p => {
+    const row = { person: p, workedMin: 0, daysIn: 0, lateN: 0, lateMin: 0, earlyN: 0, earlyMin: 0, half: 0, sick: 0, ooo: 0, toFix: 0, unlogged: 0, days: [] };
+    for (const d of range.days) {
+      const e = getEntry(state, d, p.id);
+      if (!e) {
+        if (!p.archived && d < today && isWeekday(d) && !(p.added && d < p.added)) { row.unlogged++; row.days.push({ date: d, entry: null, c: null }); }
+        continue;
+      }
+      const c = calc(e, p, state.settings, d, today);
+      row.days.push({ date: d, entry: e, c });
+      row.workedMin += c.workedMin;
+      if (isTimed(e)) row.daysIn++;
+      if (c.late) { row.lateN++; row.lateMin += c.lateMin; }
+      if (c.early) { row.earlyN++; row.earlyMin += c.earlyMin; }
+      if (e.status === 'half') row.half++;
+      if (e.status === 'sick') row.sick++;
+      if (e.status === 'ooo') row.ooo++;
+      if (c.toFix) row.toFix++;
+    }
+    return row;
+  });
+}
+
+// One row per person per logged day, sorted by date then name. Values are strings, columns = EXPORT_COLUMNS.
+function exportRows(state, range, today) {
+  const byId = new Map(state.people.map(p => [p.id, p]));
+  const rows = [];
+  for (const d of range.days) {
+    const day = state.days[d];
+    if (!day) continue;
+    const people = sortPeople(Object.keys(day.entries).filter(id => byId.has(id)).map(id => byId.get(id)));
+    for (const p of people) {
+      const e = day.entries[p.id], c = calc(e, p, state.settings, d, today), t = isTimed(e);
+      rows.push([d, WD[weekdayIdx(d)], p.name, STATUS_LABEL[e.status], t ? e.in || '' : '', t ? e.out || '' : '',
+        c.done ? String(c.breakMin) : '', fmtHours(c.workedMin), c.late ? 'Yes' : 'No', String(c.lateMin),
+        c.early ? 'Yes' : 'No', String(c.earlyMin), flagText(c), e.note || '']);
+    }
+  }
+  return rows;
+}
+function toCSV(rows) {
+  const q = v => /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  return '﻿' + [EXPORT_COLUMNS, ...rows].map(r => r.map(q).join(',')).join('\r\n') + '\r\n';
+}
+function toTSV(rows) {
+  const c = v => String(v).replace(/[\t\r\n]+/g, ' ');
+  return [EXPORT_COLUMNS, ...rows].map(r => r.map(c).join('\t')).join('\n');
+}
+
+// Validates a backup (or the stored blob) and returns a clean copy. Rejects on any bad field.
+function validateBackup(obj) {
+  const errors = [];
+  const err = m => { if (errors.length < 8) errors.push(m); };
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return { ok: false, errors: ['This is not an attendance backup (expected a JSON object).'] };
+  if (obj.version != null && obj.version !== 1) err('Backup version ' + obj.version + ' is not supported by this page.');
+  if (!Array.isArray(obj.people)) err('Missing the "people" list.');
+  if (!obj.days || typeof obj.days !== 'object' || Array.isArray(obj.days)) err('Missing the "days" object.');
+  if (errors.length) return { ok: false, errors };
+  const people = [], ids = new Set();
+  obj.people.forEach((p, i) => {
+    const tag = 'Person #' + (i + 1);
+    if (!p || typeof p.id !== 'string' || !p.id) return err(tag + ': missing id.');
+    if (ids.has(p.id)) return err(tag + ': duplicate id "' + p.id + '".');
+    if (typeof p.name !== 'string' || !p.name.trim()) return err(tag + ': missing name.');
+    for (const k of ['start', 'end']) if (p[k] && !TIME_RE.test(p[k])) return err(p.name + ': ' + k + ' "' + p[k] + '" is not HH:MM.');
+    ids.add(p.id);
+    const clean = { id: p.id, name: p.name.trim(), start: p.start || '', end: p.end || '', archived: !!p.archived };
+    if (isValidDate(p.added)) clean.added = p.added;
+    people.push(clean);
+  });
+  const days = {};
+  let dropped = 0;
+  for (const [date, day] of Object.entries(obj.days)) {
+    if (!isValidDate(date)) { err('Day "' + date + '" is not a YYYY-MM-DD date.'); continue; }
+    const ents = day && day.entries;
+    if (!ents || typeof ents !== 'object' || Array.isArray(ents)) { err(date + ': missing entries.'); continue; }
+    const out = {};
+    for (const [pid, e] of Object.entries(ents)) {
+      if (!ids.has(pid)) { dropped++; continue; }
+      if (!e || !STATUSES.includes(e.status)) { err(date + ': unknown status "' + (e && e.status) + '".'); continue; }
+      let bad = false;
+      for (const k of ['in', 'out']) if (e[k] != null && e[k] !== '' && !TIME_RE.test(e[k])) { err(date + ': ' + k + ' "' + e[k] + '" is not HH:MM.'); bad = true; }
+      if (e.breakMin != null && !(Number.isFinite(e.breakMin) && e.breakMin >= 0)) { err(date + ': break "' + e.breakMin + '" is not a number of minutes.'); bad = true; }
+      if (e.note != null && typeof e.note !== 'string') { err(date + ': note is not text.'); bad = true; }
+      if (bad) continue;
+      out[pid] = { status: e.status, in: e.in || null, out: e.out || null, breakMin: e.breakMin == null ? null : Math.round(e.breakMin), note: e.note || '' };
+    }
+    if (Object.keys(out).length) days[date] = { entries: out };
+  }
+  const s0 = obj.settings && typeof obj.settings === 'object' ? obj.settings : {};
+  const settings = { ...DEFAULT_SETTINGS };
+  for (const k of ['defaultStart', 'defaultEnd']) if (s0[k] != null) { if (TIME_RE.test(s0[k])) settings[k] = s0[k]; else err('Setting ' + k + ' "' + s0[k] + '" is not HH:MM.'); }
+  for (const k of ['graceMin', 'breakMin']) if (s0[k] != null) { if (Number.isFinite(s0[k]) && s0[k] >= 0) settings[k] = Math.round(s0[k]); else err('Setting ' + k + ' is not a number of minutes.'); }
+  if (s0.clock != null) { if (s0.clock === '12' || s0.clock === '24') settings.clock = s0.clock; else err('Setting clock must be "12" or "24".'); }
+  if (s0.payPeriodAnchor != null) { if (isValidDate(s0.payPeriodAnchor)) settings.payPeriodAnchor = s0.payPeriodAnchor; else err('Setting payPeriodAnchor is not a YYYY-MM-DD date.'); }
+  if (errors.length) return { ok: false, errors };
+  return { ok: true, errors: [], dropped, data: { version: 1, people, days, settings, lastBackup: isValidDate(obj.lastBackup) ? obj.lastBackup : null } };
+}
+/* PURE:END */
+
+// ---------- app ----------
+const KEY = 'attendance-v1', UI_KEY = 'attendance-ui';
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const today = () => dateStr(new Date());
+const nowTime = () => timeStr(new Date());
+
+let loadWarning = null;
+function emptyState() { return { version: 1, people: [], days: {}, settings: { ...DEFAULT_SETTINGS }, lastBackup: null }; }
+function load() {
+  let raw;
+  try { raw = localStorage.getItem(KEY); }
+  catch (_) { loadWarning = 'Browser storage is blocked, so changes will not be saved.'; return emptyState(); }
+  if (!raw) return emptyState();
+  try {
+    const v = validateBackup(JSON.parse(raw));
+    if (v.ok) return v.data;
+    throw new Error(v.errors.join(' '));
+  } catch (e) {
+    const copyKey = KEY + '-unreadable-' + Date.now();
+    try { localStorage.setItem(copyKey, raw); } catch (_) {}
+    loadWarning = 'Saved data could not be read (' + e.message + '). The raw data was kept under "' + copyKey + '" and the page started empty. Import a backup to restore.';
+    return emptyState();
+  }
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch (_) { showToast('Could not save. Browser storage is full or blocked. Export a backup now.'); }
+}
+function loadUi() { try { return JSON.parse(localStorage.getItem(UI_KEY)) || {}; } catch (_) { return {}; } }
+function saveUi() { try { localStorage.setItem(UI_KEY, JSON.stringify({ hMode: ui.hMode })); } catch (_) {} }
+
+let state = load();
+const ui = {
+  tab: 'log', date: today(), search: '', expanded: new Set(), confirm: null, focusAfter: null,
+  hMode: loadUi().hMode === '2w' ? '2w' : 'week', hRef: today(), hOpen: new Set(),
+  pendingImport: null, importErrors: null, manualCopy: null,
+};
+
+const S = () => state.settings;
+const personById = id => state.people.find(p => p.id === id);
+const fmtT = t => fmtTime(t, S().clock);
+const schedText = p => { const s = schedFor(p, S()); return fmtT(s.start) + '–' + fmtT(s.end); };
+const newId = () => 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const longDate = d => parseDate(d).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+const shortDate = d => parseDate(d).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+const pill = (cls, text, title) => `<span class="pill p-${cls}"${title ? ` title="${esc(title)}"` : ''}>${esc(text)}</span>`;
+
+function setEntry(date, pid, e) {
+  if (e) { (state.days[date] = state.days[date] || { entries: {} }).entries[pid] = e; return; }
+  const day = state.days[date];
+  if (!day) return;
+  delete day.entries[pid];
+  if (!Object.keys(day.entries).length) delete state.days[date];
+}
+const blankEntry = () => ({ status: 'present', in: null, out: null, breakMin: null, note: '' });
+
+// Mutates one entry, saves, re-renders, and offers Undo.
+function act(date, pid, msg, next) {
+  const before = getEntry(state, date, pid);
+  setEntry(date, pid, next);
+  save(); render();
+  showToast(msg, () => { setEntry(date, pid, before ? { ...before } : null); save(); render(); });
+}
+
+// ---------- toast ----------
+let toastTimer = null, toastUndo = null;
+function showToast(msg, undo) {
+  const el = $('toast');
+  toastUndo = undo || null;
+  el.innerHTML = `<span>${esc(msg)}</span>${undo ? '<button data-act="undo">Undo</button>' : ''}`;
+  el.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, undo ? 6000 : 3500);
+}
+function hideToast() { $('toast').hidden = true; toastUndo = null; }
+
+// ---------- render ----------
+function render() {
+  const a = document.activeElement;
+  let f = null;
+  if (a && a.id && a !== document.body && $('view').contains(a)) {
+    f = { id: a.id };
+    try { f.s = a.selectionStart; f.e = a.selectionEnd; f.d = a.selectionDirection; } catch (_) {}
+  }
+  for (const t of ['log', 'hours', 'team']) $('tab-' + t).setAttribute('aria-selected', String(ui.tab === t));
+  $('backup-chip').innerHTML = backupChip();
+  $('view').innerHTML = (loadWarning ? `<div class="notice err">${esc(loadWarning)}</div>` : '') +
+    (ui.tab === 'log' ? logHTML() : ui.tab === 'hours' ? hoursHTML() : teamHTML());
+  const target = ui.focusAfter ? $(ui.focusAfter) : f && $(f.id);
+  if (target) {
+    target.focus({ preventScroll: !ui.focusAfter });
+    if (!ui.focusAfter && f.s != null) try { target.setSelectionRange(f.s, f.e, f.d); } catch (_) {}
+  }
+  ui.focusAfter = null;
+}
+
+function backupAge() { return state.lastBackup ? diffDays(state.lastBackup, today()) : null; }
+function backupChip() {
+  if (!state.people.length) return '';
+  const age = backupAge();
+  if (age != null && age <= 7) return '';
+  return `<button class="chip warn" data-act="tab" data-tab="team">${age == null ? 'No backup yet' : 'Last backup ' + age + ' days ago'}</button>`;
+}
+
+// ----- daily log -----
+function logPeople() {
+  const date = ui.date;
+  return sortPeople(state.people.filter(p => !p.archived || getEntry(state, date, p.id)));
+}
+function countersHTML() {
+  const date = ui.date, t = today();
+  const n = { on: 0, out: 0, sick: 0, ooo: 0, none: 0 };
+  for (const p of logPeople()) {
+    const e = getEntry(state, date, p.id);
+    if (!e) { if (!p.archived) n.none++; continue; }
+    const c = calc(e, p, S(), date, t);
+    if (e.status === 'sick') n.sick++;
+    else if (e.status === 'ooo') n.ooo++;
+    else if (c.onSite) n.on++;
+    else if (e.in && e.out) n.out++;
+  }
+  const one = (cls, v, label) => `<div class="counter ${cls}"><b>${v}</b><span>${label}</span></div>`;
+  return one('c-on', n.on, 'On site') + one('', n.out, 'Clocked out') + one('c-sick', n.sick, 'Sick') + one('c-ooo', n.ooo, 'OOO') + one('c-none', n.none, 'Not logged');
+}
+function dateTitleHTML() {
+  const d = ui.date;
+  return `<h1>${esc(longDate(d))}</h1><div class="sub">${d === today() ? '<b>Today</b>' : esc(relDay(d))}</div>`;
+}
+function logHTML() {
+  const d = ui.date;
+  return `<div class="datebar">
+    <button class="icon-btn" id="day-prev" data-act="day" data-n="-1" aria-label="Previous day">‹</button>
+    <div class="date-title" id="date-title">${dateTitleHTML()}</div>
+    <button class="icon-btn" id="day-next" data-act="day" data-n="1" aria-label="Next day">›</button>
+    <input type="date" id="date-pick" value="${d}" aria-label="Pick a date">
+    <span id="today-slot">${d === today() ? '' : '<button class="btn" data-act="today">Back to today</button>'}</span>
+  </div><div id="log-body">${logBodyHTML()}</div>`;
+}
+function logBodyHTML() {
+  if (!state.people.length) {
+    return `<div class="card"><h2 style="margin:0 0 4px;font-size:16px">Add your team to start</h2>
+      <p class="muted" style="margin:0 0 10px">Paste names, one per line or separated by commas.</p>${bulkHTML('log')}</div>`;
+  }
+  return `<div class="counters" id="counters">${countersHTML()}</div>
+    <div class="toolbar"><input type="search" class="search" id="search" placeholder="Search people   ( / )" value="${esc(ui.search)}" autocomplete="off" aria-label="Search people"></div>
+    <div class="list" id="list">${listHTML()}</div>`;
+}
+function relDay(d) {
+  const n = diffDays(today(), d);
+  if (n === -1) return 'Yesterday';
+  if (n === 1) return 'Tomorrow';
+  return n < 0 ? -n + ' days ago' : 'In ' + n + ' days';
+}
+function listHTML() {
+  const q = ui.search.trim().toLowerCase();
+  const people = logPeople().filter(p => !q || p.name.toLowerCase().includes(q));
+  if (!people.length) return `<div class="card" style="border:0">No one matches “${esc(ui.search)}”.</div>`;
+  return people.map(p => {
+    const open = ui.expanded.has(p.id);
+    return `<div class="row${open ? ' open' : ''}" id="row-${p.id}"><div class="row-main" id="main-${p.id}">${rowMainHTML(p)}</div>${open ? `<div class="detail">${detailHTML(p)}</div>` : ''}</div>`;
+  }).join('');
+}
+function pillsHTML(e, c) {
+  if (!e) return '';
+  const out = [];
+  if (e.status === 'sick') out.push(pill('sick', 'Sick'));
+  if (e.status === 'ooo') out.push(pill('ooo', 'OOO'));
+  if (e.status === 'half') out.push(pill('half', 'Half-day'));
+  if (c.late) out.push(pill('late', 'Late ' + fmtDur(c.lateMin)));
+  if (c.early) out.push(pill('early', 'Left early ' + fmtDur(c.earlyMin)));
+  if (c.noClockOut) out.push(pill('flag', 'No clock-out'));
+  if (c.badTimes) out.push(pill('flag', 'Check times'));
+  if (c.onSite) out.push(pill('present', 'On site'));
+  else if (c.done) out.push(pill('done', 'Done'));
+  if (e.note) out.push(pill('note', e.note.length > 28 ? e.note.slice(0, 27) + '…' : e.note, e.note));
+  return out.join('');
+}
+function rowMainHTML(p) {
+  const d = ui.date, isToday = d === today();
+  const e = getEntry(state, d, p.id), c = calc(e, p, S(), d, today());
+  const timed = isTimed(e);
+  const dash = '<span class="muted">—</span>';
+  const tv = (label, t) => `<span class="tlabel">${label}</span><span class="tval">${esc(fmtT(t))}</span>`;
+  let cin, cout;
+  if (!timed) { cin = dash; cout = dash; }
+  else {
+    if (e && e.in) cin = tv('In', e.in);
+    else if (isToday) cin = `<button class="btn-big go" data-act="in" data-pid="${p.id}">Clock in</button>`;
+    else cin = `<button class="btn" data-act="add" data-pid="${p.id}">Add times</button>`;
+    if (e && e.out) cout = tv('Out', e.out);
+    else if (e && e.in) cout = isToday ? `<button class="btn-big stop" data-act="out" data-pid="${p.id}">Clock out</button>` : `<button class="btn" data-act="add" data-pid="${p.id}" data-focus="out">Add clock-out</button>`;
+    else if (!e) cout = `<div class="quick"><button class="btn sm" data-act="mark" data-status="sick" data-pid="${p.id}">Sick</button><button class="btn sm" data-act="mark" data-status="ooo" data-pid="${p.id}">OOO</button></div>`;
+    else cout = dash;
+  }
+  return `<button class="who" data-act="toggle" data-pid="${p.id}"><span class="name">${esc(p.name)}</span><span class="sched mono">${esc(schedText(p))}${p.archived ? ' · archived' : ''}</span></button>
+    <div class="pills">${pillsHTML(e, c)}</div>
+    <div class="cell-in">${cin}</div>
+    <div class="cell-out">${cout}</div>
+    <div class="hrs">${c.done ? fmtHours(c.workedMin) : '<span class="muted">—</span>'}</div>
+    <button class="chev" data-act="toggle" data-pid="${p.id}" aria-expanded="${ui.expanded.has(p.id)}" aria-label="Details for ${esc(p.name)}">▾</button>`;
+}
+function segHTML(p, e) {
+  return STATUSES.map(s => `<button data-act="status" data-status="${s}" data-pid="${p.id}" aria-pressed="${!!e && e.status === s}">${STATUS_LABEL[s]}</button>`).join('');
+}
+function calcLine(p, e, c) {
+  const sch = schedFor(p, S());
+  const parts = [`Schedule ${fmtT(sch.start)}–${fmtT(sch.end)} · grace ${S().graceMin}m`];
+  if (e && isTimed(e)) {
+    if (c.done) parts.push(`Worked ${fmtHours(c.workedMin)} h (break ${c.breakMin}m ${c.breakAuto ? 'auto' : 'override'})`);
+    else if (c.badTimes) parts.push(e.in ? 'Clock-out must be after clock-in' : 'Clock-out has no clock-in');
+    else if (c.noClockOut) parts.push('Missing clock-out');
+    else if (c.onSite) parts.push('On site since ' + fmtT(e.in));
+  }
+  return esc(parts.join(' · '));
+}
+function clearHTML(p, e) {
+  if (!e) return '';
+  if (ui.confirm === 'clear:' + p.id) return `<span class="confirm">Clear this day for ${esc(p.name)}?
+    <button class="btn sm danger-solid" data-act="clear-yes" data-pid="${p.id}">Clear</button>
+    <button class="btn sm" data-act="cancel">Cancel</button></span>`;
+  return `<button class="btn sm danger" data-act="clear" data-pid="${p.id}">Clear entry</button>`;
+}
+function detailHTML(p) {
+  const d = ui.date, isToday = d === today();
+  const e = getEntry(state, d, p.id), c = calc(e, p, S(), d, today());
+  const id = p.id;
+  const now = f => isToday ? `<button class="btn" data-act="now" data-field="${f}" data-pid="${id}" id="now-${f}-${id}">Now</button>` : '';
+  const times = isTimed(e) ? `<div class="fields">
+      <div class="field"><label for="f-in-${id}">Clock in</label><div class="inline"><input type="time" id="f-in-${id}" data-field="in" data-pid="${id}" value="${e && e.in || ''}">${now('in')}</div></div>
+      <div class="field"><label for="f-out-${id}">Clock out</label><div class="inline"><input type="time" id="f-out-${id}" data-field="out" data-pid="${id}" value="${e && e.out || ''}">${now('out')}</div></div>
+      <div class="field"><label for="f-brk-${id}">Break override (min)</label><input type="number" min="0" step="1" inputmode="numeric" id="f-brk-${id}" data-field="breakMin" data-pid="${id}" value="${e && e.breakMin != null ? e.breakMin : ''}" placeholder="auto"></div>
+    </div>` : `<div class="hint-line">Times are not tracked for ${STATUS_LABEL[e.status]} days.</div>`;
+  return `<div class="seg" role="group" aria-label="Status" id="seg-${id}">${segHTML(p, e)}</div>
+    ${times}
+    <div class="field wide"><label for="f-note-${id}">Note</label><input type="text" id="f-note-${id}" data-field="note" data-pid="${id}" value="${esc(e && e.note || '')}" maxlength="500" autocomplete="off"></div>
+    <div class="detail-foot"><div class="calc" id="calc-${id}">${calcLine(p, e, c)}</div><div id="clear-${id}">${clearHTML(p, e)}</div></div>`;
+}
+// Updates a row without touching its inputs, so typing is never interrupted.
+function refreshRow(pid) {
+  const p = personById(pid), e = getEntry(state, ui.date, pid), c = calc(e, p, S(), ui.date, today());
+  if ($('main-' + pid)) $('main-' + pid).innerHTML = rowMainHTML(p);
+  if ($('seg-' + pid)) $('seg-' + pid).innerHTML = segHTML(p, e);
+  if ($('calc-' + pid)) $('calc-' + pid).innerHTML = calcLine(p, e, c);
+  if ($('clear-' + pid)) $('clear-' + pid).innerHTML = clearHTML(p, e);
+  if ($('counters')) $('counters').innerHTML = countersHTML();
+}
+function editField(pid, field, value) {
+  const date = ui.date;
+  const cur = getEntry(state, date, pid);
+  let e = { ...(cur || blankEntry()), [field]: value };
+  if (e.status === 'present' && !e.in && !e.out && e.breakMin == null && !e.note) e = null;
+  setEntry(date, pid, e);
+  save();
+  refreshRow(pid);
+}
+
+// ----- hours -----
+function hoursHTML() {
+  const t = today(), r = periodRange(ui.hMode, ui.hRef, S().payPeriodAnchor);
+  const isCurrent = t >= r.start && t <= r.end;
+  const rows = summarize(state, r, t);
+  const yr = parseDate(r.end).getFullYear();
+  const md = d => parseDate(d).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  const anyOpen = rows.some(x => ui.hOpen.has(x.person.id));
+  const cnt = (n, min) => n ? `${n} · ${fmtDur(min)}` : '<span class="muted">—</span>';
+  const num = n => n ? n : '<span class="muted">0</span>';
+  const flags = (fix, un) => (fix ? pill('flag', fix + ' to fix') : '') + (un ? pill('flag-o', un + ' unlogged') : '');
+  const tot = { workedMin: 0, daysIn: 0, lateN: 0, lateMin: 0, earlyN: 0, earlyMin: 0, half: 0, sick: 0, ooo: 0, toFix: 0, unlogged: 0 };
+  const body = rows.map(x => {
+    for (const k in tot) tot[k] += x[k];
+    const open = ui.hOpen.has(x.person.id);
+    return `<tbody><tr class="prow" data-act="h-open" data-pid="${x.person.id}">
+      <td><button class="pbtn" data-act="h-open" data-pid="${x.person.id}" aria-expanded="${open}"><span class="car">${open ? '▾' : '▸'}</span>${esc(x.person.name)}${x.person.archived ? ' <span class="pill p-arch">archived</span>' : ''}</button></td>
+      <td class="num">${fmtHours(x.workedMin)}</td><td class="num">${x.daysIn}</td>
+      <td class="mono">${cnt(x.lateN, x.lateMin)}</td><td class="mono">${cnt(x.earlyN, x.earlyMin)}</td>
+      <td class="num">${num(x.half)}</td><td class="num">${num(x.sick)}</td><td class="num">${num(x.ooo)}</td>
+      <td><div class="flags">${flags(x.toFix, x.unlogged) || '<span class="muted">—</span>'}</div></td></tr>
+      ${open ? `<tr class="drow"><td colspan="9">${dayTable(x)}</td></tr>` : ''}</tbody>`;
+  }).join('');
+  return `<div class="hbar">
+      <div class="seg" role="group" aria-label="Period"><button data-act="h-mode" data-v="week" aria-pressed="${ui.hMode === 'week'}">Week</button><button data-act="h-mode" data-v="2w" aria-pressed="${ui.hMode === '2w'}">2 weeks</button></div>
+      <button class="icon-btn" data-act="h-move" data-n="-1" aria-label="Previous period">‹</button>
+      <span class="period">${esc(md(r.start))} – ${esc(md(r.end))}, ${yr}</span>
+      <button class="icon-btn" data-act="h-move" data-n="1" aria-label="Next period">›</button>
+      ${isCurrent ? '' : '<button class="btn" data-act="h-now">Current period</button>'}
+      <span class="grow"></span>
+      <button class="btn" data-act="h-all">${anyOpen ? 'Collapse all' : 'Show daily detail'}</button>
+      <button class="btn" data-act="copy">Copy for Lark</button>
+      <button class="btn ink" data-act="csv">Download CSV</button>
+    </div>
+    ${ui.manualCopy != null ? `<div class="notice info manual" style="margin-bottom:12px">Clipboard is blocked. The text below is selected, press ⌘C to copy.
+      <textarea id="manual-copy" readonly>${esc(ui.manualCopy)}</textarea><div class="btns"><button class="btn sm" data-act="manual-close">Close</button></div></div>` : ''}
+    ${rows.length ? `<div class="table-wrap"><table class="sum">
+      <thead><tr><th>Person</th><th class="num">Hours</th><th class="num">Days in</th><th>Late</th><th>Left early</th><th class="num">Half-days</th><th class="num">Sick</th><th class="num">OOO</th><th>Flags</th></tr></thead>
+      ${body}
+      <tfoot><tr><td>Team total</td><td class="num">${fmtHours(tot.workedMin)}</td><td class="num">${tot.daysIn}</td>
+        <td class="mono">${cnt(tot.lateN, tot.lateMin)}</td><td class="mono">${cnt(tot.earlyN, tot.earlyMin)}</td>
+        <td class="num">${tot.half}</td><td class="num">${tot.sick}</td><td class="num">${tot.ooo}</td>
+        <td><div class="flags">${flags(tot.toFix, tot.unlogged) || '<span class="muted">—</span>'}</div></td></tr></tfoot>
+    </table></div>` : '<div class="card">No people yet. Add your team in the Team tab.</div>'}`;
+}
+function dayTable(x) {
+  if (!x.days.length) return '<div class="muted" style="padding:10px 12px">Nothing logged in this period.</div>';
+  const rows = x.days.map(({ date, entry: e, c }) => {
+    const go = `<button class="btn link" data-act="goto" data-date="${date}" data-pid="${x.person.id}">${esc(shortDate(date))}</button>`;
+    if (!e) return `<tr><td>${go}</td><td class="num muted">—</td><td class="mono muted">—</td><td>${pill('flag-o', 'Unlogged')}</td><td></td><td class="note"></td></tr>`;
+    const timed = isTimed(e);
+    const span = timed && (e.in || e.out) ? `${esc(fmtT(e.in) || '?')} → ${esc(fmtT(e.out) || '?')}${c.done ? ` <span class="muted">· ${c.breakMin}m break</span>` : ''}` : '<span class="muted">—</span>';
+    const st = { present: '', half: pill('half', 'Half-day'), sick: pill('sick', 'Sick'), ooo: pill('ooo', 'OOO') }[e.status] || '';
+    const fl = [c.late && pill('late', 'Late ' + fmtDur(c.lateMin)), c.early && pill('early', 'Left early ' + fmtDur(c.earlyMin)),
+      c.noClockOut && pill('flag', 'No clock-out'), c.badTimes && pill('flag', 'Check times')].filter(Boolean).join(' ');
+    return `<tr><td>${go}</td><td class="num">${timed ? fmtHours(c.workedMin) : '<span class="muted">—</span>'}</td><td class="mono">${span}</td>
+      <td>${st || '<span class="muted">Present</span>'}</td><td>${fl}</td><td class="note">${esc(e.note)}</td></tr>`;
+  }).join('');
+  return `<table class="dtable"><thead><tr><th>Date</th><th class="num">Hours</th><th>In → Out</th><th>Status</th><th>Flags</th><th>Note</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ----- team -----
+function bulkHTML(ctx) {
+  return `<div class="bulk"><textarea id="bulk-${ctx}" placeholder="Alex Chen&#10;Sam Patel&#10;Jordan Lee" aria-label="Names to add"></textarea>
+    <div class="actions"><span class="muted" style="font-size:12px">Duplicates are skipped.</span><button class="btn ink" data-act="bulk" data-ctx="${ctx}">Add people</button></div></div>`;
+}
+function personRow(p) {
+  const id = p.id;
+  const del = ui.confirm === 'del:' + id
+    ? `<span class="confirm">Delete ${esc(p.name)} and all their history?
+        <button class="btn sm danger-solid" data-act="del-yes" data-pid="${id}">Delete</button><button class="btn sm" data-act="cancel">Cancel</button></span>`
+    : `<button class="btn sm danger" data-act="del" data-pid="${id}">Delete</button>`;
+  const custom = p.start || p.end;
+  return `<div class="trow">
+    <input class="name-in" id="pn-${id}" data-pfield="name" data-pid="${id}" value="${esc(p.name)}" aria-label="Name" autocomplete="off">
+    <div class="sch"><label for="ps-${id}">Start</label><input type="time" id="ps-${id}" data-pfield="start" data-pid="${id}" value="${p.start}">
+      <label for="pe-${id}">End</label><input type="time" id="pe-${id}" data-pfield="end" data-pid="${id}" value="${p.end}">
+      <button class="btn sm" id="pr-${id}" data-act="p-default" data-pid="${id}"${custom ? '' : ' hidden'}>Use default</button></div>
+    <button class="btn sm" data-act="archive" data-pid="${id}">${p.archived ? 'Restore' : 'Archive'}</button>
+    ${del}</div>`;
+}
+function teamHTML() {
+  const s = S();
+  const active = sortPeople(state.people.filter(p => !p.archived)), archived = sortPeople(state.people.filter(p => p.archived));
+  const age = backupAge();
+  const rule = (label, input, hint) => `<div class="rule"><label class="lbl">${label}${input}</label><div class="hint">${hint}</div></div>`;
+  const rule2 = (label, ctl, hint) => `<div class="rule"><span class="lbl">${label}</span>${ctl}<div class="hint">${hint}</div></div>`;
+  let imp = '';
+  if (ui.importErrors) imp = `<div class="notice err">That file can't be imported:<ul>${ui.importErrors.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
+      <div class="btns"><button class="btn sm" data-act="import-no">Dismiss</button></div></div>`;
+  else if (ui.pendingImport) {
+    const d = ui.pendingImport.data;
+    imp = `<div class="notice warn"><b>Replace all current data with “${esc(ui.pendingImport.name)}”?</b><br>
+      Backup: ${d.people.length} people, ${Object.keys(d.days).length} logged days${ui.pendingImport.dropped ? `, ${ui.pendingImport.dropped} entries for unknown people skipped` : ''}.
+      Current: ${state.people.length} people, ${Object.keys(state.days).length} logged days.
+      <div class="btns"><button class="btn sm danger-solid" data-act="import-yes">Replace data</button><button class="btn sm" data-act="export">Export current first</button><button class="btn sm" data-act="import-no">Cancel</button></div></div>`;
+  }
+  return `<div class="section"><h2>Add people</h2><div class="card">${bulkHTML('team')}</div></div>
+    <div class="section"><h2>People <span>${active.length} active · blank start/end uses the default</span></h2>
+      <div class="people">${active.map(personRow).join('') || '<div class="trow muted">No active people.</div>'}</div></div>
+    ${archived.length ? `<div class="section"><h2>Archived <span>hidden from the daily log, history kept</span></h2><div class="people">${archived.map(personRow).join('')}</div></div>` : ''}
+    <div class="section"><h2>Rules</h2><div class="card rules">
+      ${rule('Default start', `<input type="time" id="s-start" data-setting="defaultStart" value="${s.defaultStart}">`, 'Late is measured from this unless a person has their own start.')}
+      ${rule('Default end', `<input type="time" id="s-end" data-setting="defaultEnd" value="${s.defaultEnd}">`, 'Left early is measured to this unless a person has their own end.')}
+      ${rule('Grace (minutes)', `<input type="number" min="0" step="1" id="s-grace" data-setting="graceMin" value="${s.graceMin}">`, 'Flag Late / Left early only past this. The flag shows the full minutes.')}
+      ${rule('Lunch break (unpaid, minutes)', `<input type="number" min="0" step="1" id="s-break" data-setting="breakMin" value="${s.breakMin}">`, 'Deducted from shifts over 5 hours unless an entry has its own break.')}
+      ${rule2('Clock', `<div class="seg" role="group" aria-label="Clock"><button data-act="clock" data-v="12" aria-pressed="${s.clock === '12'}">12-hour</button><button data-act="clock" data-v="24" aria-pressed="${s.clock === '24'}">24-hour</button></div>`, 'How times are shown. Time inputs follow your Mac’s own setting.')}
+      ${rule('2-week period start', `<input type="date" id="s-anchor" data-setting="payPeriodAnchor" value="${s.payPeriodAnchor}">`, 'First day of any 2-week period. Periods repeat every 14 days from here.')}
+    </div></div>
+    <div class="section backup"><h2>Backup</h2><div class="card">
+      <p>Last backup export: <b>${state.lastBackup ? esc(parseDate(state.lastBackup).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })) + (age === 0 ? ' (today)' : ` (${age} day${age === 1 ? '' : 's'} ago)`) : 'never'}</b></p>
+      ${state.people.length && (age == null || age > 7) ? `<div class="notice warn" style="margin:0 0 10px">Browser data can be wiped by clearing site data. Export a backup now and keep it somewhere safe.</div>` : ''}
+      <p class="muted" style="font-size:12px">Data lives only in this browser on this Mac (localStorage key “${KEY}”).</p>
+      <div class="btns"><button class="btn ink" data-act="export">Export backup (JSON)</button><button class="btn" data-act="import">Import backup (JSON)</button></div>
+      ${imp}
+    </div></div>`;
+}
+
+// ---------- actions ----------
+function download(name, text, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type }));
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (_) {}
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+  document.body.appendChild(ta); ta.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (_) {}
+  ta.remove();
+  return ok;
+}
+function bulkAdd(ctx) {
+  const ta = $('bulk-' + ctx);
+  const names = ta.value.split(/[\n,]+/).map(s => s.trim().replace(/\s+/g, ' ')).filter(Boolean);
+  if (!names.length) { showToast('Type at least one name.'); return; }
+  const seen = new Set(state.people.map(p => p.name.toLowerCase()));
+  let added = 0, skipped = 0;
+  for (const name of names) {
+    if (seen.has(name.toLowerCase())) { skipped++; continue; }
+    seen.add(name.toLowerCase());
+    state.people.push({ id: newId(), name, start: '', end: '', archived: false, added: today() });
+    added++;
+  }
+  save(); render();
+  showToast(`Added ${added} ${added === 1 ? 'person' : 'people'}${skipped ? `, skipped ${skipped} duplicate${skipped === 1 ? '' : 's'}` : ''}.`);
+}
+
+const handlers = {
+  tab(t) { ui.tab = t.dataset.tab; ui.confirm = null; render(); window.scrollTo(0, 0); },
+  day(t) { ui.date = addDays(ui.date, Number(t.dataset.n)); ui.confirm = null; render(); },
+  today() { ui.date = today(); ui.confirm = null; render(); },
+  toggle(t, pid) { ui.expanded.has(pid) ? ui.expanded.delete(pid) : ui.expanded.add(pid); render(); },
+  add(t, pid) { ui.expanded.add(pid); ui.focusAfter = 'f-' + (t.dataset.focus || 'in') + '-' + pid; render(); },
+  in(t, pid) {
+    const tm = nowTime(), e = getEntry(state, ui.date, pid);
+    act(ui.date, pid, `${personById(pid).name} clocked in at ${fmtT(tm)}`, { ...(e || blankEntry()), in: tm });
+  },
+  out(t, pid) {
+    const tm = nowTime(), e = getEntry(state, ui.date, pid);
+    act(ui.date, pid, `${personById(pid).name} clocked out at ${fmtT(tm)}`, { ...e, out: tm });
+  },
+  mark(t, pid) { setStatus(pid, t.dataset.status); },
+  status(t, pid) { setStatus(pid, t.dataset.status); },
+  now(t, pid) {
+    const tm = nowTime(), f = t.dataset.field, e = getEntry(state, ui.date, pid);
+    act(ui.date, pid, `${personById(pid).name}: clock ${f} set to ${fmtT(tm)}`, { ...(e || blankEntry()), [f]: tm });
+  },
+  clear(t, pid) { ui.confirm = 'clear:' + pid; refreshRow(pid); },
+  'clear-yes'(t, pid) { ui.confirm = null; act(ui.date, pid, `Cleared ${personById(pid).name} for ${shortDate(ui.date)}`, null); },
+  cancel() { ui.confirm = null; render(); },
+  undo() { const fn = toastUndo; hideToast(); if (fn) { fn(); showToast('Undone.'); } },
+  bulk(t) { bulkAdd(t.dataset.ctx); },
+  archive(t, pid) {
+    const p = personById(pid), was = p.archived;
+    p.archived = !was; save(); render();
+    showToast(`${p.name} ${was ? 'restored' : 'archived'}.`, () => { p.archived = was; save(); render(); });
+  },
+  del(t, pid) { ui.confirm = 'del:' + pid; render(); },
+  'del-yes'(t, pid) {
+    const idx = state.people.findIndex(p => p.id === pid), p = state.people[idx], hist = {};
+    for (const [d, day] of Object.entries(state.days)) if (day.entries[pid]) { hist[d] = day.entries[pid]; setEntry(d, pid, null); }
+    state.people.splice(idx, 1);
+    ui.confirm = null; ui.expanded.delete(pid);
+    save(); render();
+    showToast(`Deleted ${p.name} and ${Object.keys(hist).length} logged days.`, () => {
+      state.people.splice(idx, 0, p);
+      for (const [d, e] of Object.entries(hist)) setEntry(d, pid, e);
+      save(); render();
+    });
+  },
+  'p-default'(t, pid) {
+    const p = personById(pid);
+    p.start = ''; p.end = ''; save();
+    $('ps-' + pid).value = ''; $('pe-' + pid).value = ''; t.hidden = true;
+  },
+  clock(t) { S().clock = t.dataset.v; save(); render(); },
+  'h-mode'(t) { ui.hMode = t.dataset.v; saveUi(); render(); },
+  'h-move'(t) { ui.hRef = addDays(periodRange(ui.hMode, ui.hRef, S().payPeriodAnchor).start, Number(t.dataset.n) * (ui.hMode === '2w' ? 14 : 7)); render(); },
+  'h-now'() { ui.hRef = today(); render(); },
+  'h-open'(t, pid) { ui.hOpen.has(pid) ? ui.hOpen.delete(pid) : ui.hOpen.add(pid); render(); },
+  'h-all'() {
+    const r = periodRange(ui.hMode, ui.hRef, S().payPeriodAnchor), ids = summarize(state, r, today()).map(x => x.person.id);
+    if (ids.some(id => ui.hOpen.has(id))) ui.hOpen.clear(); else ids.forEach(id => ui.hOpen.add(id));
+    render();
+  },
+  goto(t, pid) { ui.tab = 'log'; ui.date = t.dataset.date; ui.search = ''; ui.expanded.add(pid); render(); const row = $('row-' + pid); if (row) row.scrollIntoView({ block: 'center' }); },
+  async copy() {
+    const r = periodRange(ui.hMode, ui.hRef, S().payPeriodAnchor), rows = exportRows(state, r, today()), text = toTSV(rows);
+    if (await copyText(text)) { ui.manualCopy = null; render(); showToast(`Copied ${rows.length} row${rows.length === 1 ? '' : 's'}. Paste into the Lark Base grid.`); }
+    else { ui.manualCopy = text; render(); const ta = $('manual-copy'); if (ta) { ta.focus(); ta.select(); } }
+  },
+  'manual-close'() { ui.manualCopy = null; render(); },
+  csv() {
+    const r = periodRange(ui.hMode, ui.hRef, S().payPeriodAnchor), rows = exportRows(state, r, today());
+    download(`attendance_${r.start}_to_${r.end}.csv`, toCSV(rows), 'text/csv;charset=utf-8');
+    showToast(`Downloaded ${rows.length} row${rows.length === 1 ? '' : 's'}.`);
+  },
+  export() {
+    const t = today(), now = new Date();
+    state.lastBackup = t; save();
+    const data = { version: 1, exportedAt: t + 'T' + timeStr(now) + ':' + pad(now.getSeconds()), people: state.people, days: state.days, settings: state.settings, lastBackup: t };
+    download(`attendance-backup-${t}.json`, JSON.stringify(data, null, 2), 'application/json');
+    render(); showToast('Backup exported.');
+  },
+  import() { $('import-file').value = ''; $('import-file').click(); },
+  'import-no'() { ui.pendingImport = null; ui.importErrors = null; render(); },
+  'import-yes'() {
+    const prev = state, pend = ui.pendingImport;
+    state = pend.data;
+    const exp = typeof pend.exportedAt === 'string' ? pend.exportedAt.slice(0, 10) : '';
+    if (isValidDate(exp)) state.lastBackup = exp;
+    ui.pendingImport = null; ui.expanded.clear(); ui.hOpen.clear(); loadWarning = null;
+    save(); render();
+    showToast('Backup imported.', () => { state = prev; save(); render(); });
+  },
+};
+function setStatus(pid, status) {
+  const e = getEntry(state, ui.date, pid);
+  if (e && e.status === status) return;
+  const base = { ...(e || blankEntry()), status };
+  if (status === 'sick' || status === 'ooo') { base.in = null; base.out = null; base.breakMin = null; }
+  act(ui.date, pid, `${personById(pid).name}: ${STATUS_LABEL[status]} on ${shortDate(ui.date)}`, base);
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]');
+  if (!t || !handlers[t.dataset.act]) return;
+  handlers[t.dataset.act](t, t.dataset.pid, e);
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'search') { ui.search = t.value; $('list').innerHTML = listHTML(); return; }
+  const f = t.dataset.field;
+  if (!f) return;
+  if (f === 'note') editField(t.dataset.pid, 'note', t.value);
+  else if (f === 'breakMin') { const v = t.value === '' ? null : Math.round(Number(t.value)); editField(t.dataset.pid, 'breakMin', Number.isFinite(v) && v >= 0 ? v : null); }
+  else editField(t.dataset.pid, f, TIME_RE.test(t.value) ? t.value : null);
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'date-pick') {
+    // Leave the picker itself untouched so typing a date isn't interrupted.
+    if (!isValidDate(t.value)) return;
+    ui.date = t.value; ui.confirm = null;
+    $('date-title').innerHTML = dateTitleHTML();
+    $('today-slot').innerHTML = ui.date === today() ? '' : '<button class="btn" data-act="today">Back to today</button>';
+    $('log-body').innerHTML = logBodyHTML();
+    return;
+  }
+  if (t.id === 'import-file') { readImport(t.files && t.files[0]); return; }
+  if (t.dataset.pfield) {
+    const p = personById(t.dataset.pid), k = t.dataset.pfield;
+    if (k === 'name') {
+      const v = t.value.trim().replace(/\s+/g, ' ');
+      if (!v) { t.value = p.name; showToast('Name can’t be empty.'); return; }
+      if (state.people.some(o => o.id !== p.id && o.name.toLowerCase() === v.toLowerCase())) { t.value = p.name; showToast('Someone already has that name.'); return; }
+      p.name = v; t.value = v;
+    } else {
+      p[k] = TIME_RE.test(t.value) ? t.value : '';
+      $('pr-' + p.id).hidden = !(p.start || p.end);
+    }
+    save(); return;
+  }
+  if (t.dataset.setting) {
+    const k = t.dataset.setting, s = S();
+    if (k === 'defaultStart' || k === 'defaultEnd') { if (TIME_RE.test(t.value)) s[k] = t.value; else { t.value = s[k]; showToast('A default time is required.'); return; } }
+    else if (k === 'graceMin' || k === 'breakMin') { const v = Math.round(Number(t.value)); if (t.value !== '' && Number.isFinite(v) && v >= 0) s[k] = v; t.value = s[k]; }
+    else if (k === 'payPeriodAnchor') { if (isValidDate(t.value)) s[k] = t.value; else t.value = s[k]; }
+    save();
+  }
+});
+document.addEventListener('keydown', e => {
+  const t = e.target, typing = t.closest && t.closest('input, textarea, select, [contenteditable]');
+  if (e.key === '/' && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    e.preventDefault();
+    if (ui.tab !== 'log') { ui.tab = 'log'; render(); }
+    const s = $('search'); if (s) { s.focus(); s.select(); }
+  } else if (e.key === 'Escape' && t.id === 'search') {
+    ui.search = ''; t.value = ''; $('list').innerHTML = listHTML();
+  }
+});
+function readImport(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    let obj;
+    try { obj = JSON.parse(r.result); } catch (_) { ui.importErrors = ['The file is not valid JSON.']; ui.pendingImport = null; render(); return; }
+    const v = validateBackup(obj);
+    if (!v.ok) { ui.importErrors = v.errors; ui.pendingImport = null; }
+    else { ui.importErrors = null; ui.pendingImport = { data: v.data, dropped: v.dropped, name: file.name, exportedAt: obj.exportedAt }; }
+    render();
+  };
+  r.onerror = () => { ui.importErrors = ['The file could not be read.']; render(); };
+  r.readAsText(file);
+}
+
+// Follow the calendar day while the page stays open.
+let lastToday = today();
+function checkDay() {
+  const t = today();
+  if (t === lastToday) return;
+  if (ui.date === lastToday) ui.date = t;
+  if (ui.hRef === lastToday) ui.hRef = t;
+  lastToday = t;
+  render();
+}
+setInterval(checkDay, 20000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkDay(); });
+window.addEventListener('storage', e => { if (e.key === KEY) { state = load(); render(); } });
+
+render();
+</script>
+</body>
+</html>
