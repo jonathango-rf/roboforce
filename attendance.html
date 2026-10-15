@@ -10,7 +10,6 @@
   --bg:#f5f6f8; --surface:#fff; --surface-2:#f1f3f6; --border:#dfe3e8; --border-strong:#c9cfd8;
   --text:#14171c; --muted:#5f6b7a; --focus:#2563eb;
   --ink:#1b1f26; --on-ink:#fff;
-  --go:#15803d; --on-go:#fff;
   --green:#15803d; --green-bg:#dcfce7;
   --amber:#a16207; --amber-bg:#fef3c7;
   --orange:#c2410c; --orange-bg:#ffedd5;
@@ -26,7 +25,6 @@
     --bg:#0e1013; --surface:#16191e; --surface-2:#1d2128; --border:#2a2f37; --border-strong:#3a414c;
     --text:#e7e9ed; --muted:#98a2b3; --focus:#60a5fa;
     --ink:#e7e9ed; --on-ink:#0e1013;
-    --go:#22c55e; --on-go:#052e14;
     --green:#4ade80; --green-bg:rgba(74,222,128,.14);
     --amber:#fbbf24; --amber-bg:rgba(251,191,36,.14);
     --orange:#fb923c; --orange-bg:rgba(251,146,60,.15);
@@ -63,10 +61,7 @@ header.top{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1
 .btn.danger-solid{background:var(--red);border-color:var(--red);color:#fff}
 .btn.ink{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
 .btn.link{border:0;background:none;padding:0;min-height:0;color:var(--focus);text-decoration:underline;text-underline-offset:2px}
-.btn-big{width:100%;min-height:46px;border-radius:10px;border:0;font-weight:700;font-size:15px}
-.btn-big.go{background:var(--go);color:var(--on-go)}
-.btn-big.stop{background:var(--ink);color:var(--on-ink)}
-.btn-big:active,.btn:active{transform:translateY(1px)}
+.btn:active{transform:translateY(1px)}
 .icon-btn{width:38px;height:38px;border-radius:8px;border:1px solid var(--border-strong);background:var(--surface);font-size:20px;line-height:1;display:inline-grid;place-items:center}
 .chip{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:3px 10px;font-size:12px}
 .chip.warn{border-color:var(--amber);color:var(--amber);background:var(--amber-bg)}
@@ -115,14 +110,13 @@ header.top{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1
 .pills{grid-area:pills;display:flex;flex-wrap:wrap;gap:4px;min-width:0}
 .cell-in{grid-area:in}.cell-out{grid-area:out}
 .cell-in,.cell-out{min-width:0}
-.tval{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px}
+.tin{width:100%;border:1px solid var(--border-strong);background:var(--surface);border-radius:8px;padding:6px 8px;min-height:40px;font-size:15px}
+.tin.is-default{color:var(--muted);border-style:dashed}
 .tlabel{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .hrs{grid-area:hrs;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px}
 .chev{grid-area:chev;width:34px;height:34px;border:0;border-radius:8px;background:none;color:var(--muted);font-size:16px}
 .chev:hover{background:var(--surface-2)}
 .row.open .chev{transform:rotate(180deg)}
-.quick{display:flex;gap:6px}
-.quick .btn{flex:1}
 .detail{background:var(--surface-2);border-top:1px dashed var(--border);padding:12px 14px 14px}
 .fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
 .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
@@ -164,6 +158,29 @@ tfoot td{font-weight:700;border-bottom:0;background:var(--surface-2)}
 .sum tfoot td:first-child{background:var(--surface-2)}
 .flags{display:flex;gap:4px}
 
+/* calendar */
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-bottom:10px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend .cc{width:22px;height:22px;border-radius:6px}
+.cal th,.cal td{padding:0;text-align:center;border-bottom:1px solid var(--border);border-left:1px solid var(--border)}
+.cal th:first-child,.cal td:first-child{border-left:0;text-align:left;padding:0 12px;min-width:110px}
+.cal th.day{font-size:11px;line-height:1.25;padding:6px 0;min-width:28px;font-family:var(--mono)}
+.cal th.day b{display:block;font-size:12px;color:var(--text)}
+.cal th.today b{color:var(--focus)}
+.cal .wkend{background:var(--surface-2)}
+.cal td.tot{padding:0 12px;min-width:64px}
+.cc{display:inline-grid;place-items:center;width:100%;height:34px;border:0;background:none;font:700 13px var(--mono);color:var(--muted);padding:0}
+button.cc:hover{outline:2px solid var(--focus);outline-offset:-2px}
+.c-ok{background:var(--green-bg);color:var(--green)}
+.c-on{color:var(--green)}
+.c-late{background:var(--amber-bg);color:var(--amber)}
+.c-early{background:var(--orange-bg);color:var(--orange)}
+.c-half{background:var(--teal-bg);color:var(--teal)}
+.c-sick{background:var(--violet-bg);color:var(--violet)}
+.c-ooo{background:var(--slate-bg);color:var(--slate)}
+.c-flag{background:var(--red-bg);color:var(--red)}
+.c-unl{color:var(--red)}
+
 /* team */
 .section{margin-top:24px}
 .section h2{font-size:15px;margin:0 0 8px;display:flex;gap:8px;align-items:baseline}
@@ -186,6 +203,7 @@ tfoot td{font-weight:700;border-bottom:0;background:var(--surface-2)}
 .notice.info{background:var(--surface-2);border:1px solid var(--border)}
 .notice ul{margin:6px 0 0;padding-left:18px}
 .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.summary textarea{width:100%;resize:vertical;font:13px/1.5 var(--mono);border:1px solid var(--border-strong);border-radius:8px;background:var(--surface-2);padding:8px 10px}
 .manual textarea{width:100%;height:160px;font-family:var(--mono);font-size:12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);padding:8px}
 
 /* toast */
@@ -208,6 +226,7 @@ tfoot td{font-weight:700;border-bottom:0;background:var(--surface-2)}
     <span class="brand">Attendance</span>
     <nav class="tabs" role="tablist">
       <button class="tab" role="tab" data-act="tab" data-tab="log" id="tab-log">Daily log</button>
+      <button class="tab" role="tab" data-act="tab" data-tab="cal" id="tab-cal">Calendar</button>
       <button class="tab" role="tab" data-act="tab" data-tab="hours" id="tab-hours">Hours</button>
       <button class="tab" role="tab" data-act="tab" data-tab="team" id="tab-team">Team</button>
     </nav>
@@ -219,6 +238,7 @@ tfoot td{font-weight:700;border-bottom:0;background:var(--surface-2)}
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <input type="file" id="import-file" accept=".json,application/json" hidden>
 
+<script src="storage.js"></script>
 <script>
 /* PURE:BEGIN — no DOM, no storage; tested in Node */
 const STATUSES = ['present', 'half', 'sick', 'ooo'];
@@ -256,7 +276,7 @@ function isTimed(entry) { return !entry || entry.status === 'present' || entry.s
 
 function calc(entry, person, settings, date, today) {
   const r = { status: entry ? entry.status : null, inMin: null, outMin: null, breakMin: 0, breakAuto: true, workedMin: 0,
-    late: false, lateMin: 0, early: false, earlyMin: 0, noClockOut: false, badTimes: false, onSite: false, done: false, toFix: false };
+    late: false, lateMin: 0, early: false, earlyMin: 0, longBreak: false, noClockOut: false, badTimes: false, onSite: false, done: false, toFix: false };
   if (!entry || !isTimed(entry)) return r; // sick / OOO: times ignored, 0 hours
   const i = toMin(entry.in), o = toMin(entry.out);
   r.inMin = i; r.outMin = o;
@@ -274,6 +294,7 @@ function calc(entry, person, settings, date, today) {
     if (i != null) { const d = i - toMin(sch.start); if (d > settings.graceMin) { r.late = true; r.lateMin = d; } }
     if (r.done) { const d = toMin(sch.end) - o; if (d > settings.graceMin) { r.early = true; r.earlyMin = d; } }
   }
+  r.longBreak = entry.breakMin != null && entry.breakMin > settings.breakMin;
   r.toFix = r.noClockOut || r.badTimes;
   return r;
 }
@@ -341,6 +362,26 @@ function toTSV(rows) {
   return [EXPORT_COLUMNS, ...rows].map(r => r.map(c).join('\t')).join('\n');
 }
 
+// End-of-day text: one "Name: status" line per person, alphabetical.
+function dailySummary(state, date, today) {
+  const s = state.settings;
+  const people = sortPeople(state.people.filter(p => !p.archived || getEntry(state, date, p.id)));
+  const lines = people.map(p => {
+    const e = getEntry(state, date, p.id);
+    if (!e) return p.name + ': not logged';
+    if (e.status === 'sick') return p.name + ': sick';
+    if (e.status === 'ooo') return p.name + ': OOO';
+    const c = calc(e, p, s, date, today), parts = [];
+    if (e.status === 'half') parts.push('half-day' + (e.in && e.out ? ' @ ' + fmtTime(e.in, s.clock) + '–' + fmtTime(e.out, s.clock) : ''));
+    if (c.late) parts.push('arrive late @ ' + fmtTime(e.in, s.clock));
+    if (c.longBreak) parts.push('longer break ' + fmtDur(e.breakMin));
+    if (c.early) parts.push('leave early @ ' + fmtTime(e.out, s.clock));
+    return p.name + ': ' + (parts.join(', ') || 'on time');
+  });
+  const head = 'Attendance ' + parseDate(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  return [head, ...lines].join('\n');
+}
+
 // Validates a backup (or the stored blob) and returns a clean copy. Rejects on any bad field.
 function validateBackup(obj) {
   const errors = [];
@@ -393,41 +434,52 @@ function validateBackup(obj) {
 /* PURE:END */
 
 // ---------- app ----------
-const KEY = 'attendance-v1', UI_KEY = 'attendance-ui';
+// Saved through storage.js to the rf-admin server: one key for people + settings, one key per day
+// (like shift-report), so each write stays far below the 64 KB keepalive request limit.
+const META_KEY = 'attendance:meta', DAY_PREFIX = 'attendance:', UI_KEY = 'attendance-ui';
+const isOurKey = k => k === META_KEY || /^attendance:\d{4}-\d{2}-\d{2}$/.test(k);
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const today = () => dateStr(new Date());
-const nowTime = () => timeStr(new Date());
 
-let loadWarning = null;
+const DEFAULT_PEOPLE = ['Donovon', 'Ahmed', 'Charles', 'Karanveer', 'Devin', 'Jun', 'Ash', 'Johnny', 'Ron', 'Jonathan'];
+let loaded = false, synced = {}, lastSaveAt = 0;
 function emptyState() { return { version: 1, people: [], days: {}, settings: { ...DEFAULT_SETTINGS }, lastBackup: null }; }
+function storedRaw() { const o = {}; for (const k of store.keys()) if (isOurKey(k)) o[k] = store.get(k); return o; }
+function sameRaw(a, b) { const ka = Object.keys(a); return ka.length === Object.keys(b).length && ka.every(k => a[k] === b[k]); }
+// Throws if the stored data can't be read, so a bad load never gets saved over.
 function load() {
-  let raw;
-  try { raw = localStorage.getItem(KEY); }
-  catch (_) { loadWarning = 'Browser storage is blocked, so changes will not be saved.'; return emptyState(); }
-  if (!raw) return emptyState();
-  try {
-    const v = validateBackup(JSON.parse(raw));
-    if (v.ok) return v.data;
-    throw new Error(v.errors.join(' '));
-  } catch (e) {
-    const copyKey = KEY + '-unreadable-' + Date.now();
-    try { localStorage.setItem(copyKey, raw); } catch (_) {}
-    loadWarning = 'Saved data could not be read (' + e.message + '). The raw data was kept under "' + copyKey + '" and the page started empty. Import a backup to restore.';
-    return emptyState();
+  const raw = storedRaw();
+  if (!raw[META_KEY]) {
+    if (Object.keys(raw).length) throw new Error('Day files exist but attendance:meta is missing.');
+    synced = {};
+    const s = emptyState();
+    s.people = DEFAULT_PEOPLE.map(name => ({ id: newId(), name, start: '', end: '', archived: false, added: today() }));
+    return s;
   }
+  const meta = JSON.parse(raw[META_KEY]), days = {};
+  for (const k in raw) if (k !== META_KEY) days[k.slice(DAY_PREFIX.length)] = JSON.parse(raw[k]);
+  const v = validateBackup({ ...meta, days });
+  if (!v.ok) throw new Error(v.errors.join(' '));
+  synced = raw;
+  return v.data;
 }
+// Writes only the keys that changed and removes days that no longer exist.
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(state)); }
-  catch (_) { showToast('Could not save. Browser storage is full or blocked. Export a backup now.'); }
+  const next = { [META_KEY]: JSON.stringify({ version: 1, people: state.people, settings: state.settings, lastBackup: state.lastBackup }) };
+  for (const [d, day] of Object.entries(state.days)) next[DAY_PREFIX + d] = JSON.stringify(day);
+  for (const k in next) if (next[k] !== synced[k]) store.set(k, next[k]);
+  for (const k in synced) if (!(k in next)) store.remove(k);
+  synced = next;
+  lastSaveAt = Date.now();
 }
 function loadUi() { try { return JSON.parse(localStorage.getItem(UI_KEY)) || {}; } catch (_) { return {}; } }
 function saveUi() { try { localStorage.setItem(UI_KEY, JSON.stringify({ hMode: ui.hMode })); } catch (_) {} }
 
-let state = load();
+let state = emptyState();
 const ui = {
-  tab: 'log', date: today(), search: '', expanded: new Set(), confirm: null, focusAfter: null,
-  hMode: loadUi().hMode === '2w' ? '2w' : 'week', hRef: today(), hOpen: new Set(),
+  tab: 'log', date: today(), search: '', addOpen: false, sumOpen: false, expanded: new Set(), confirm: null, focusAfter: null,
+  hMode: loadUi().hMode === '2w' ? '2w' : 'week', hRef: today(), hOpen: new Set(), calMonth: today().slice(0, 7),
   pendingImport: null, importErrors: null, manualCopy: null,
 };
 
@@ -471,16 +523,16 @@ function hideToast() { $('toast').hidden = true; toastUndo = null; }
 
 // ---------- render ----------
 function render() {
+  if (!loaded) return;
   const a = document.activeElement;
   let f = null;
   if (a && a.id && a !== document.body && $('view').contains(a)) {
     f = { id: a.id };
     try { f.s = a.selectionStart; f.e = a.selectionEnd; f.d = a.selectionDirection; } catch (_) {}
   }
-  for (const t of ['log', 'hours', 'team']) $('tab-' + t).setAttribute('aria-selected', String(ui.tab === t));
+  for (const t of ['log', 'cal', 'hours', 'team']) $('tab-' + t).setAttribute('aria-selected', String(ui.tab === t));
   $('backup-chip').innerHTML = backupChip();
-  $('view').innerHTML = (loadWarning ? `<div class="notice err">${esc(loadWarning)}</div>` : '') +
-    (ui.tab === 'log' ? logHTML() : ui.tab === 'hours' ? hoursHTML() : teamHTML());
+  $('view').innerHTML = ui.tab === 'log' ? logHTML() : ui.tab === 'cal' ? calHTML() : ui.tab === 'hours' ? hoursHTML() : teamHTML();
   const target = ui.focusAfter ? $(ui.focusAfter) : f && $(f.id);
   if (target) {
     target.focus({ preventScroll: !ui.focusAfter });
@@ -515,7 +567,7 @@ function countersHTML() {
     else if (e.in && e.out) n.out++;
   }
   const one = (cls, v, label) => `<div class="counter ${cls}"><b>${v}</b><span>${label}</span></div>`;
-  return one('c-on', n.on, 'On site') + one('', n.out, 'Clocked out') + one('c-sick', n.sick, 'Sick') + one('c-ooo', n.ooo, 'OOO') + one('c-none', n.none, 'Not logged');
+  return one('c-on', n.on, 'On site') + one('', n.out, 'Done') + one('c-sick', n.sick, 'Sick') + one('c-ooo', n.ooo, 'OOO') + one('c-none', n.none, 'Not logged');
 }
 function dateTitleHTML() {
   const d = ui.date;
@@ -537,8 +589,24 @@ function logBodyHTML() {
       <p class="muted" style="margin:0 0 10px">Paste names, one per line or separated by commas.</p>${bulkHTML('log')}</div>`;
   }
   return `<div class="counters" id="counters">${countersHTML()}</div>
-    <div class="toolbar"><input type="search" class="search" id="search" placeholder="Search people   ( / )" value="${esc(ui.search)}" autocomplete="off" aria-label="Search people"></div>
+    <div class="toolbar"><input type="search" class="search" id="search" placeholder="Search people   ( / )" value="${esc(ui.search)}" autocomplete="off" aria-label="Search people">
+      <span id="fill-slot">${fillHTML()}</span>
+      <button class="btn" data-act="sum-open" aria-expanded="${ui.sumOpen}">${ui.sumOpen ? 'Hide summary' : 'Summary'}</button>
+      <button class="btn" data-act="add-open" aria-expanded="${ui.addOpen}">${ui.addOpen ? 'Close' : '+ Add people'}</button></div>
+    ${ui.addOpen ? `<div class="card" style="margin-bottom:8px">${bulkHTML('log')}</div>` : ''}
+    ${ui.sumOpen ? summaryHTML() : ''}
     <div class="list" id="list">${listHTML()}</div>`;
+}
+function summaryHTML() {
+  const text = dailySummary(state, ui.date, today());
+  return `<div class="card summary" style="margin-bottom:8px">
+    <textarea id="sum-text" readonly rows="${text.split('\n').length}" aria-label="Daily summary">${esc(text)}</textarea>
+    <div class="btns"><button class="btn ink" data-act="sum-copy">Copy summary</button><button class="btn" data-act="sum-open">Close</button></div></div>`;
+}
+const notLogged = () => logPeople().filter(p => !p.archived && !getEntry(state, ui.date, p.id));
+function fillHTML() {
+  const n = notLogged().length;
+  return n ? `<button class="btn" data-act="fill" title="Log everyone not logged yet at their default times">Fill rest (${n})</button>` : '';
 }
 function relDay(d) {
   const n = diffDays(today(), d);
@@ -562,6 +630,7 @@ function pillsHTML(e, c) {
   if (e.status === 'ooo') out.push(pill('ooo', 'OOO'));
   if (e.status === 'half') out.push(pill('half', 'Half-day'));
   if (c.late) out.push(pill('late', 'Late ' + fmtDur(c.lateMin)));
+  if (c.longBreak) out.push(pill('late', 'Long break ' + fmtDur(e.breakMin)));
   if (c.early) out.push(pill('early', 'Left early ' + fmtDur(c.earlyMin)));
   if (c.noClockOut) out.push(pill('flag', 'No clock-out'));
   if (c.badTimes) out.push(pill('flag', 'Check times'));
@@ -570,29 +639,27 @@ function pillsHTML(e, c) {
   if (e.note) out.push(pill('note', e.note.length > 28 ? e.note.slice(0, 27) + '…' : e.note, e.note));
   return out.join('');
 }
+// Rows with no times yet show the person's schedule in the In/Out boxes (dashed, not saved).
+const showsDefault = e => isTimed(e) && !(e && (e.in || e.out));
+// Pills, or Present / Sick / OOO shortcuts while the row is still empty.
+function pillsCell(p, e, c) {
+  if (e) return pillsHTML(e, c);
+  return `<button class="btn sm" data-act="present" data-pid="${p.id}" title="Log the default times">Present</button><button class="btn sm" data-act="mark" data-status="sick" data-pid="${p.id}">Sick</button><button class="btn sm" data-act="mark" data-status="ooo" data-pid="${p.id}">OOO</button>`;
+}
+const hrsCell = c => c.done ? fmtHours(c.workedMin) : '<span class="muted">—</span>';
 function rowMainHTML(p) {
-  const d = ui.date, isToday = d === today();
-  const e = getEntry(state, d, p.id), c = calc(e, p, S(), d, today());
-  const timed = isTimed(e);
-  const dash = '<span class="muted">—</span>';
-  const tv = (label, t) => `<span class="tlabel">${label}</span><span class="tval">${esc(fmtT(t))}</span>`;
-  let cin, cout;
-  if (!timed) { cin = dash; cout = dash; }
-  else {
-    if (e && e.in) cin = tv('In', e.in);
-    else if (isToday) cin = `<button class="btn-big go" data-act="in" data-pid="${p.id}">Clock in</button>`;
-    else cin = `<button class="btn" data-act="add" data-pid="${p.id}">Add times</button>`;
-    if (e && e.out) cout = tv('Out', e.out);
-    else if (e && e.in) cout = isToday ? `<button class="btn-big stop" data-act="out" data-pid="${p.id}">Clock out</button>` : `<button class="btn" data-act="add" data-pid="${p.id}" data-focus="out">Add clock-out</button>`;
-    else if (!e) cout = `<div class="quick"><button class="btn sm" data-act="mark" data-status="sick" data-pid="${p.id}">Sick</button><button class="btn sm" data-act="mark" data-status="ooo" data-pid="${p.id}">OOO</button></div>`;
-    else cout = dash;
-  }
-  return `<button class="who" data-act="toggle" data-pid="${p.id}"><span class="name">${esc(p.name)}</span><span class="sched mono">${esc(schedText(p))}${p.archived ? ' · archived' : ''}</span></button>
-    <div class="pills">${pillsHTML(e, c)}</div>
-    <div class="cell-in">${cin}</div>
-    <div class="cell-out">${cout}</div>
-    <div class="hrs">${c.done ? fmtHours(c.workedMin) : '<span class="muted">—</span>'}</div>
-    <button class="chev" data-act="toggle" data-pid="${p.id}" aria-expanded="${ui.expanded.has(p.id)}" aria-label="Details for ${esc(p.name)}">▾</button>`;
+  const d = ui.date, id = p.id;
+  const e = getEntry(state, d, id), c = calc(e, p, S(), d, today());
+  const sch = schedFor(p, S()), def = showsDefault(e);
+  const time = (f, label) => isTimed(e)
+    ? `<label class="tlabel" for="f-${f}-${id}">${label}</label><input type="time" class="tin${def ? ' is-default' : ''}" id="f-${f}-${id}" data-field="${f}" data-pid="${id}" value="${def ? sch[f === 'in' ? 'start' : 'end'] : e[f] || ''}"${def ? ' title="Default time, not saved yet. Edit it or tap Present."' : ''}>`
+    : `<span class="tlabel">${label}</span><span class="muted">—</span>`;
+  return `<button class="who" data-act="toggle" data-pid="${id}"><span class="name">${esc(p.name)}</span><span class="sched mono">${esc(schedText(p))}${p.archived ? ' · archived' : ''}</span></button>
+    <div class="pills" id="pills-${id}">${pillsCell(p, e, c)}</div>
+    <div class="cell-in">${time('in', 'In')}</div>
+    <div class="cell-out">${time('out', 'Out')}</div>
+    <div class="hrs" id="hrs-${id}">${hrsCell(c)}</div>
+    <button class="chev" data-act="toggle" data-pid="${id}" aria-expanded="${ui.expanded.has(id)}" aria-label="Details for ${esc(p.name)}">▾</button>`;
 }
 function segHTML(p, e) {
   return STATUSES.map(s => `<button data-act="status" data-status="${s}" data-pid="${p.id}" aria-pressed="${!!e && e.status === s}">${STATUS_LABEL[s]}</button>`).join('');
@@ -616,14 +683,11 @@ function clearHTML(p, e) {
   return `<button class="btn sm danger" data-act="clear" data-pid="${p.id}">Clear entry</button>`;
 }
 function detailHTML(p) {
-  const d = ui.date, isToday = d === today();
+  const d = ui.date;
   const e = getEntry(state, d, p.id), c = calc(e, p, S(), d, today());
   const id = p.id;
-  const now = f => isToday ? `<button class="btn" data-act="now" data-field="${f}" data-pid="${id}" id="now-${f}-${id}">Now</button>` : '';
   const times = isTimed(e) ? `<div class="fields">
-      <div class="field"><label for="f-in-${id}">Clock in</label><div class="inline"><input type="time" id="f-in-${id}" data-field="in" data-pid="${id}" value="${e && e.in || ''}">${now('in')}</div></div>
-      <div class="field"><label for="f-out-${id}">Clock out</label><div class="inline"><input type="time" id="f-out-${id}" data-field="out" data-pid="${id}" value="${e && e.out || ''}">${now('out')}</div></div>
-      <div class="field"><label for="f-brk-${id}">Break override (min)</label><input type="number" min="0" step="1" inputmode="numeric" id="f-brk-${id}" data-field="breakMin" data-pid="${id}" value="${e && e.breakMin != null ? e.breakMin : ''}" placeholder="auto"></div>
+      <div class="field"><label for="f-brk-${id}">Break taken (min)</label><input type="number" min="0" step="1" inputmode="numeric" id="f-brk-${id}" data-field="breakMin" data-pid="${id}" value="${e && e.breakMin != null ? e.breakMin : ''}" placeholder="standard ${S().breakMin}"></div>
     </div>` : `<div class="hint-line">Times are not tracked for ${STATUS_LABEL[e.status]} days.</div>`;
   return `<div class="seg" role="group" aria-label="Status" id="seg-${id}">${segHTML(p, e)}</div>
     ${times}
@@ -633,16 +697,26 @@ function detailHTML(p) {
 // Updates a row without touching its inputs, so typing is never interrupted.
 function refreshRow(pid) {
   const p = personById(pid), e = getEntry(state, ui.date, pid), c = calc(e, p, S(), ui.date, today());
-  if ($('main-' + pid)) $('main-' + pid).innerHTML = rowMainHTML(p);
+  if ($('pills-' + pid)) $('pills-' + pid).innerHTML = pillsCell(p, e, c);
+  if ($('hrs-' + pid)) $('hrs-' + pid).innerHTML = hrsCell(c);
   if ($('seg-' + pid)) $('seg-' + pid).innerHTML = segHTML(p, e);
   if ($('calc-' + pid)) $('calc-' + pid).innerHTML = calcLine(p, e, c);
   if ($('clear-' + pid)) $('clear-' + pid).innerHTML = clearHTML(p, e);
   if ($('counters')) $('counters').innerHTML = countersHTML();
+  if ($('fill-slot')) $('fill-slot').innerHTML = fillHTML();
+  if ($('sum-text')) $('sum-text').value = dailySummary(state, ui.date, today());
+  for (const f of ['in', 'out']) { const el = $(`f-${f}-${pid}`); if (el) el.classList.toggle('is-default', showsDefault(e)); }
 }
 function editField(pid, field, value) {
   const date = ui.date;
   const cur = getEntry(state, date, pid);
-  let e = { ...(cur || blankEntry()), [field]: value };
+  let base = cur || blankEntry();
+  // Editing a time or break on a default row saves the default times too.
+  if ((field === 'in' || field === 'out' || field === 'breakMin') && isTimed(base) && !base.in && !base.out) {
+    const s = schedFor(personById(pid), S());
+    base = { ...base, in: s.start, out: s.end };
+  }
+  let e = { ...base, [field]: value };
   if (e.status === 'present' && !e.in && !e.out && e.breakMin == null && !e.note) e = null;
   setEntry(date, pid, e);
   save();
@@ -693,6 +767,61 @@ function hoursHTML() {
         <td class="num">${tot.half}</td><td class="num">${tot.sick}</td><td class="num">${tot.ooo}</td>
         <td><div class="flags">${flags(tot.toFix, tot.unlogged) || '<span class="muted">—</span>'}</div></td></tr></tfoot>
     </table></div>` : '<div class="card">No people yet. Add your team in the Team tab.</div>'}`;
+}
+// ----- calendar: people × days of one month -----
+function calCell(p, d, t) {
+  const e = getEntry(state, d, p.id);
+  if (!e) return !p.archived && d < t && isWeekday(d) && !(p.added && d < p.added) ? ['c-unl', '?', 'Not logged'] : null;
+  const c = calc(e, p, S(), d, t);
+  const parts = [];
+  if (isTimed(e) && (e.in || e.out)) parts.push(`${fmtT(e.in) || '?'}–${fmtT(e.out) || '?'}`);
+  if (c.done) parts.push(fmtHours(c.workedMin) + ' h');
+  if (c.late) parts.push('Late ' + fmtDur(c.lateMin));
+  if (c.longBreak) parts.push('Long break ' + fmtDur(e.breakMin));
+  if (c.early) parts.push('Left early ' + fmtDur(c.earlyMin));
+  if (c.toFix) parts.push(flagText(c));
+  if (e.note) parts.push(e.note);
+  const tip = [STATUS_LABEL[e.status], ...parts].join(' · ');
+  if (e.status === 'sick') return ['c-sick', 'S', tip];
+  if (e.status === 'ooo') return ['c-ooo', 'O', tip];
+  if (c.toFix) return ['c-flag', '!', tip];
+  if (e.status === 'half') return ['c-half', '½', tip];
+  if (c.late && c.early) return ['c-late', 'LE', tip];
+  if (c.late) return ['c-late', 'L', tip];
+  if (c.early) return ['c-early', 'E', tip];
+  if (c.longBreak) return ['c-late', 'B', tip];
+  if (c.onSite) return ['c-on', '•', tip];
+  if (c.done) return ['c-ok', '✓', tip];
+  return ['', '·', tip];
+}
+function calHTML() {
+  const t = today(), ym = ui.calMonth, days = [];
+  for (let d = ym + '-01'; d.startsWith(ym); d = addDays(d, 1)) days.push(d);
+  const people = sortPeople(state.people.filter(p => !p.archived || days.some(d => getEntry(state, d, p.id))));
+  const title = parseDate(days[0]).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  const wk = d => !isWeekday(d) ? ' wkend' : '';
+  const head = days.map(d => `<th class="day${wk(d)}${d === t ? ' today' : ''}">${WD[weekdayIdx(d)][0]}<b>${Number(d.slice(8))}</b></th>`).join('');
+  const rows = people.map(p => {
+    let min = 0;
+    const cells = days.map(d => {
+      const e = getEntry(state, d, p.id);
+      if (e) min += calc(e, p, S(), d, t).workedMin;
+      const cell = calCell(p, d, t), label = `${p.name}, ${shortDate(d)}`;
+      if (!cell) return `<td class="${wk(d).trim()}"><button class="cc" data-act="goto" data-date="${d}" data-pid="${p.id}" aria-label="${esc(label)}: nothing logged"></button></td>`;
+      return `<td class="${wk(d).trim()}"><button class="cc ${cell[0]}" data-act="goto" data-date="${d}" data-pid="${p.id}" title="${esc(label + ' · ' + cell[2])}" aria-label="${esc(label + ': ' + cell[2])}">${cell[1]}</button></td>`;
+    }).join('');
+    return `<tr><td><b>${esc(p.name)}</b>${p.archived ? ' <span class="pill p-arch">archived</span>' : ''}</td>${cells}<td class="num tot">${fmtHours(min)}</td></tr>`;
+  }).join('');
+  const key = (cls, sym, label) => `<span><span class="cc ${cls}">${sym}</span>${label}</span>`;
+  return `<div class="hbar">
+      <button class="icon-btn" data-act="cal-move" data-n="-1" aria-label="Previous month">‹</button>
+      <span class="period">${esc(title)}</span>
+      <button class="icon-btn" data-act="cal-move" data-n="1" aria-label="Next month">›</button>
+      ${ym === t.slice(0, 7) ? '' : '<button class="btn" data-act="cal-now">This month</button>'}
+    </div>
+    <div class="legend">${key('c-ok', '✓', 'Present')}${key('c-late', 'L', 'Late')}${key('c-early', 'E', 'Left early')}${key('c-late', 'B', 'Long break')}${key('c-half', '½', 'Half-day')}${key('c-sick', 'S', 'Sick')}${key('c-ooo', 'O', 'OOO')}${key('c-flag', '!', 'Needs fixing')}${key('c-unl', '?', 'Not logged')}${key('c-on', '•', 'On site')}<span>Hover for times · click to open the day</span></div>
+    ${people.length ? `<div class="table-wrap"><table class="cal"><thead><tr><th>Person</th>${head}<th class="num">Hours</th></tr></thead><tbody>${rows}</tbody></table></div>`
+      : '<div class="card">No people yet. Add your team in the Team tab.</div>'}`;
 }
 function dayTable(x) {
   if (!x.days.length) return '<div class="muted" style="padding:10px 12px">Nothing logged in this period.</div>';
@@ -760,8 +889,8 @@ function teamHTML() {
     </div></div>
     <div class="section backup"><h2>Backup</h2><div class="card">
       <p>Last backup export: <b>${state.lastBackup ? esc(parseDate(state.lastBackup).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })) + (age === 0 ? ' (today)' : ` (${age} day${age === 1 ? '' : 's'} ago)`) : 'never'}</b></p>
-      ${state.people.length && (age == null || age > 7) ? `<div class="notice warn" style="margin:0 0 10px">Browser data can be wiped by clearing site data. Export a backup now and keep it somewhere safe.</div>` : ''}
-      <p class="muted" style="font-size:12px">Data lives only in this browser on this Mac (localStorage key “${KEY}”).</p>
+      ${state.people.length && (age == null || age > 7) ? `<div class="notice warn" style="margin:0 0 10px">Export a backup now and keep a copy off this Mac (Drive or Lark), in case the data folder is lost.</div>` : ''}
+      <p class="muted" style="font-size:12px">Saved by the rf-admin server to data/attendance:*.json on this Mac (one file per day).</p>
       <div class="btns"><button class="btn ink" data-act="export">Export backup (JSON)</button><button class="btn" data-act="import">Import backup (JSON)</button></div>
       ${imp}
     </div></div>`;
@@ -797,6 +926,7 @@ function bulkAdd(ctx) {
     state.people.push({ id: newId(), name, start: '', end: '', archived: false, added: today() });
     added++;
   }
+  if (added) ui.addOpen = false;
   save(); render();
   showToast(`Added ${added} ${added === 1 ? 'person' : 'people'}${skipped ? `, skipped ${skipped} duplicate${skipped === 1 ? '' : 's'}` : ''}.`);
 }
@@ -806,26 +936,33 @@ const handlers = {
   day(t) { ui.date = addDays(ui.date, Number(t.dataset.n)); ui.confirm = null; render(); },
   today() { ui.date = today(); ui.confirm = null; render(); },
   toggle(t, pid) { ui.expanded.has(pid) ? ui.expanded.delete(pid) : ui.expanded.add(pid); render(); },
-  add(t, pid) { ui.expanded.add(pid); ui.focusAfter = 'f-' + (t.dataset.focus || 'in') + '-' + pid; render(); },
-  in(t, pid) {
-    const tm = nowTime(), e = getEntry(state, ui.date, pid);
-    act(ui.date, pid, `${personById(pid).name} clocked in at ${fmtT(tm)}`, { ...(e || blankEntry()), in: tm });
-  },
-  out(t, pid) {
-    const tm = nowTime(), e = getEntry(state, ui.date, pid);
-    act(ui.date, pid, `${personById(pid).name} clocked out at ${fmtT(tm)}`, { ...e, out: tm });
-  },
   mark(t, pid) { setStatus(pid, t.dataset.status); },
-  status(t, pid) { setStatus(pid, t.dataset.status); },
-  now(t, pid) {
-    const tm = nowTime(), f = t.dataset.field, e = getEntry(state, ui.date, pid);
-    act(ui.date, pid, `${personById(pid).name}: clock ${f} set to ${fmtT(tm)}`, { ...(e || blankEntry()), [f]: tm });
+  present(t, pid) {
+    const p = personById(pid), s = schedFor(p, S());
+    act(ui.date, pid, `${p.name}: present ${fmtT(s.start)}–${fmtT(s.end)}`, { ...blankEntry(), in: s.start, out: s.end });
   },
+  fill() {
+    const date = ui.date, todo = notLogged();
+    for (const p of todo) { const s = schedFor(p, S()); setEntry(date, p.id, { ...blankEntry(), in: s.start, out: s.end }); }
+    save(); render();
+    showToast(`Logged ${todo.length} ${todo.length === 1 ? 'person' : 'people'} at their default times.`, () => {
+      for (const p of todo) setEntry(date, p.id, null);
+      save(); render();
+    });
+  },
+  status(t, pid) { setStatus(pid, t.dataset.status); },
   clear(t, pid) { ui.confirm = 'clear:' + pid; refreshRow(pid); },
   'clear-yes'(t, pid) { ui.confirm = null; act(ui.date, pid, `Cleared ${personById(pid).name} for ${shortDate(ui.date)}`, null); },
   cancel() { ui.confirm = null; render(); },
   undo() { const fn = toastUndo; hideToast(); if (fn) { fn(); showToast('Undone.'); } },
   bulk(t) { bulkAdd(t.dataset.ctx); },
+  'sum-open'() { ui.sumOpen = !ui.sumOpen; render(); },
+  async 'sum-copy'() {
+    const ta = $('sum-text');
+    if (await copyText(ta.value)) showToast('Summary copied.');
+    else { ta.focus(); ta.select(); showToast('Clipboard is blocked. The text is selected, press ⌘C.'); }
+  },
+  'add-open'() { ui.addOpen = !ui.addOpen; if (ui.addOpen) ui.focusAfter = 'bulk-log'; render(); },
   archive(t, pid) {
     const p = personById(pid), was = p.archived;
     p.archived = !was; save(); render();
@@ -853,6 +990,8 @@ const handlers = {
   'h-mode'(t) { ui.hMode = t.dataset.v; saveUi(); render(); },
   'h-move'(t) { ui.hRef = addDays(periodRange(ui.hMode, ui.hRef, S().payPeriodAnchor).start, Number(t.dataset.n) * (ui.hMode === '2w' ? 14 : 7)); render(); },
   'h-now'() { ui.hRef = today(); render(); },
+  'cal-move'(t) { const [y, m] = ui.calMonth.split('-').map(Number); ui.calMonth = dateStr(new Date(y, m - 1 + Number(t.dataset.n), 1, 12)).slice(0, 7); render(); },
+  'cal-now'() { ui.calMonth = today().slice(0, 7); render(); },
   'h-open'(t, pid) { ui.hOpen.has(pid) ? ui.hOpen.delete(pid) : ui.hOpen.add(pid); render(); },
   'h-all'() {
     const r = periodRange(ui.hMode, ui.hRef, S().payPeriodAnchor), ids = summarize(state, r, today()).map(x => x.person.id);
@@ -885,7 +1024,7 @@ const handlers = {
     state = pend.data;
     const exp = typeof pend.exportedAt === 'string' ? pend.exportedAt.slice(0, 10) : '';
     if (isValidDate(exp)) state.lastBackup = exp;
-    ui.pendingImport = null; ui.expanded.clear(); ui.hOpen.clear(); loadWarning = null;
+    ui.pendingImport = null; ui.expanded.clear(); ui.hOpen.clear();
     save(); render();
     showToast('Backup imported.', () => { state = prev; save(); render(); });
   },
@@ -977,14 +1116,31 @@ function checkDay() {
   if (t === lastToday) return;
   if (ui.date === lastToday) ui.date = t;
   if (ui.hRef === lastToday) ui.hRef = t;
+  if (ui.calMonth === lastToday.slice(0, 7)) ui.calMonth = t.slice(0, 7);
   lastToday = t;
   render();
 }
 setInterval(checkDay, 20000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) checkDay(); });
-window.addEventListener('storage', e => { if (e.key === KEY) { state = load(); render(); } });
+// Pick up changes saved from another open copy (e.g. a second tab) when this one regains focus.
+function pullLatest() {
+  if (!loaded || Date.now() - lastSaveAt < 3000) return;
+  store.refresh().then(() => {
+    if (sameRaw(storedRaw(), synced)) return;
+    try { state = load(); render(); } catch (_) {}
+  }, () => {});
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { checkDay(); pullLatest(); } });
+window.addEventListener('focus', pullLatest);
 
-render();
+// Wait for the server copy before showing anything, so an empty page can never overwrite saved data.
+function blocked(html) { $('view').innerHTML = `<div class="notice err" style="margin-top:16px">${html}</div>`; }
+store.ready.then(() => store.refresh()).then(() => {
+  try { state = load(); }
+  catch (e) { blocked('Saved attendance data could not be read, so nothing was loaded or changed.<br>' + esc(e.message)); return; }
+  loaded = true;
+  if (!synced[META_KEY]) save(); // first run: store the default team so their ids stay fixed
+  render();
+}, () => blocked('Can’t reach the rf-admin server, so attendance can’t load or save. Run <b>./serve.sh</b>, then open <b>http://localhost:8080</b> → Admin → Attendance.'));
 </script>
 </body>
 </html>
