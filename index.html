@@ -230,10 +230,12 @@
   </div>
   <div class="sep"></div>
   <button class="tab" onclick="switchTab(0)">Shift Report</button>
-  <button class="tab" onclick="switchTab(1)">Admin</button>
+  <button class="tab" onclick="switchTab(1)">Attendance</button>
+  <button class="tab" onclick="switchTab(2)">Admin</button>
 </nav>
 
 <div class="pane"><iframe src="shift-report.html" title="Shift Report"></iframe></div>
+<div class="pane"><iframe src="attendance.html" title="Attendance"></iframe></div>
 
 <div class="pane" id="admin-pane">
   <div class="gate" id="admin-gate">
@@ -273,7 +275,7 @@
     tabs.forEach((t, idx) => t.classList.toggle('active', idx === i));
     panes.forEach((p, idx) => p.classList.toggle('active', idx === i));
     if (persist) store.set('rf-station-tab', i);
-    if (i === 1 && gate.style.display !== 'none') passwordInput.focus();
+    if (panes[i].id === 'admin-pane' && gate.style.display !== 'none') passwordInput.focus();
   }
 
   function unlockAdmin(e) {
@@ -299,7 +301,8 @@
       const frame = p.querySelector('iframe');
       if (!frame.src) frame.src = frame.dataset.src;
     });
-    switchSubTab(parseInt(sessionStorage.getItem('rf-admin-subtab') ?? '0', 10) || 0);
+    const sub = parseInt(sessionStorage.getItem('rf-admin-subtab') ?? '0', 10) || 0;
+    switchSubTab(sub < subtabs.length ? sub : 0);
   }
 
   function lockAdmin() {
